@@ -3,37 +3,122 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#073b82">
+
   <title>SG RDG Live</title>
+
+  <script
+    type="text/javascript"
+    src="https://www.fussball.de/widgets.js">
+  </script>
+
   <style>
-    body{
-      margin:0;
-      font-family:Arial,sans-serif;
-      background:#f2f5f8;
-      color:#10233f;
+    * {
+      box-sizing: border-box;
     }
-    main{
-      max-width:900px;
-      margin:auto;
-      padding:20px;
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #eef3f8;
+      color: #10233f;
     }
-    h1{
-      color:#073b82;
+
+    main {
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 14px;
     }
-    .widget{
-      background:white;
-      border-radius:12px;
-      padding:15px;
-      margin-bottom:20px;
+
+    .header {
+      background: linear-gradient(135deg, #06387d, #0870cf);
+      color: white;
+      padding: 20px;
+      border-radius: 14px;
+      margin-bottom: 14px;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 28px;
+    }
+
+    .header p {
+      margin: 5px 0 0;
+      opacity: .85;
+      font-size: 13px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 14px;
+      padding: 12px;
+      margin-bottom: 14px;
+      box-shadow: 0 5px 18px rgba(18, 48, 84, .12);
+    }
+
+    .title {
+      color: #073b82;
+      font-size: 17px;
+      font-weight: 800;
+      margin: 2px 2px 12px;
+    }
+
+    @media(max-width: 520px) {
+      main {
+        padding: 8px;
+      }
+
+      .header {
+        border-radius: 10px;
+        padding: 15px;
+      }
+
+      .header h1 {
+        font-size: 22px;
+      }
+
+      .card {
+        border-radius: 10px;
+        padding: 7px;
+      }
     }
   </style>
 </head>
-<body>
-  <main>
-    <h1>SG RDG Live</h1>
 
-    <div class="widget" id="fussballde-widget">
-      FUSSBALL.DE Live-Daten werden hier eingebunden.
-    </div>
+<body>
+
+  <main>
+
+    <header class="header">
+      <h1>SG RDG</h1>
+      <p>Rockenhausen · Dörnbach · Gundersweiler</p>
+    </header>
+
+    <section class="card">
+      <div class="title">⚽ Nächstes Spiel</div>
+
+      <div
+        class="fussballde_widget"
+        data-id="a35b42e1-7552-4695-849b-3f25f1ae1dcc"
+        data-type="next-match"
+        style="width:100%">
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="title">📊 Bezirksliga Westpfalz</div>
+
+      <div
+        class="fussballde_widget"
+        data-id="89826e99-bff3-4394-bb3c-38cf54766f4e"
+        data-type="table"
+        style="width:100%">
+      </div>
+    </section>
+
   </main>
+
 </body>
 </html>
