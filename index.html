@@ -2,8 +2,16 @@
 <html lang="de">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#073b82">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1"
+  >
+
+  <meta
+    name="theme-color"
+    content="#073b82"
+  >
 
   <title>SG RDG Live</title>
 
@@ -13,112 +21,531 @@
   </script>
 
   <style>
-    * {
-      box-sizing: border-box;
+
+    *{
+      box-sizing:border-box;
     }
 
-    body {
-      margin: 0;
-      font-family: Arial, Helvetica, sans-serif;
-      background: #eef3f8;
-      color: #10233f;
+    body{
+      margin:0;
+      font-family:Arial,Helvetica,sans-serif;
+      background:#eef3f8;
+      color:#10233f;
     }
 
-    main {
-      width: 100%;
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 14px;
+    main{
+      width:100%;
+      max-width:900px;
+      margin:0 auto;
+      padding:12px;
     }
 
-    .header {
-      background: linear-gradient(135deg, #06387d, #0870cf);
-      color: white;
-      padding: 20px;
-      border-radius: 14px;
-      margin-bottom: 14px;
+    .live-header{
+      margin-bottom:12px;
+      padding:16px;
+      border-radius:12px;
+      background:
+        linear-gradient(
+          135deg,
+          #06387d,
+          #0870cf
+        );
+      color:white;
     }
 
-    .header h1 {
-      margin: 0;
-      font-size: 28px;
+    .live-header-top{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
     }
 
-    .header p {
-      margin: 5px 0 0;
-      opacity: .85;
-      font-size: 13px;
+    .live-header h1{
+      margin:0;
+      font-size:24px;
     }
 
-    .card {
-      background: white;
-      border-radius: 14px;
-      padding: 12px;
-      margin-bottom: 14px;
-      box-shadow: 0 5px 18px rgba(18, 48, 84, .12);
+    .live-header p{
+      margin:4px 0 0;
+      font-size:12px;
+      opacity:.85;
     }
 
-    .title {
-      color: #073b82;
-      font-size: 17px;
-      font-weight: 800;
-      margin: 2px 2px 12px;
+    .team-name{
+      margin-top:14px;
+      font-size:19px;
+      font-weight:900;
     }
 
-    @media(max-width: 520px) {
-      main {
-        padding: 8px;
+    .team-league{
+      margin-top:3px;
+      font-size:12px;
+      opacity:.85;
+    }
+
+    .team-dots{
+      display:flex;
+      gap:6px;
+      margin-top:12px;
+    }
+
+    .team-dot{
+      width:27px;
+      height:5px;
+      border-radius:20px;
+      background:rgba(255,255,255,.3);
+      transition:.25s;
+    }
+
+    .team-dot.active{
+      background:#fff;
+    }
+
+    .rotation-note{
+      font-size:10px;
+      opacity:.7;
+      text-align:right;
+    }
+
+    /*
+       Alle Mannschaften liegen übereinander.
+       Dadurch können die FUSSBALL.DE-Widgets
+       bereits beim Laden korrekt ihre Breite bestimmen.
+    */
+
+    .slides{
+      display:grid;
+    }
+
+    .team-slide{
+      grid-area:1 / 1;
+      min-width:0;
+      opacity:0;
+      visibility:hidden;
+      pointer-events:none;
+      transition:opacity .3s ease;
+      z-index:0;
+    }
+
+    .team-slide.active{
+      opacity:1;
+      visibility:visible;
+      pointer-events:auto;
+      z-index:1;
+    }
+
+    .card{
+      width:100%;
+      margin-bottom:12px;
+      padding:10px;
+      overflow:hidden;
+      border-radius:12px;
+      background:#fff;
+      box-shadow:
+        0 4px 15px
+        rgba(18,48,84,.11);
+    }
+
+    .card-title{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
+      margin:2px 3px 10px;
+      color:#073b82;
+      font-size:16px;
+      font-weight:900;
+    }
+
+    .card-title span:last-child{
+      color:#758397;
+      font-size:10px;
+      font-weight:700;
+    }
+
+    .fussballde_widget{
+      width:100%!important;
+      max-width:100%;
+    }
+
+    @media(max-width:520px){
+
+      main{
+        padding:7px;
       }
 
-      .header {
-        border-radius: 10px;
-        padding: 15px;
+      .live-header{
+        padding:13px;
+        border-radius:10px;
       }
 
-      .header h1 {
-        font-size: 22px;
+      .live-header h1{
+        font-size:20px;
       }
 
-      .card {
-        border-radius: 10px;
-        padding: 7px;
+      .team-name{
+        font-size:17px;
       }
+
+      .card{
+        padding:6px;
+        border-radius:9px;
+      }
+
+      .card-title{
+        font-size:13px;
+      }
+
+      .rotation-note{
+        font-size:9px;
+      }
+
     }
+
   </style>
 </head>
 
 <body>
 
-  <main>
+<main>
 
-    <header class="header">
-      <h1>SG RDG</h1>
-      <p>Rockenhausen · Dörnbach · Gundersweiler</p>
-    </header>
+  <header class="live-header">
 
-    <section class="card">
-      <div class="title">⚽ Nächstes Spiel</div>
+    <div class="live-header-top">
 
-      <div
-        class="fussballde_widget"
-        data-id="a35b42e1-7552-4695-849b-3f25f1ae1dcc"
-        data-type="next-match"
-        style="width:100%">
+      <div>
+        <h1>SG RDG LIVE</h1>
+        <p>
+          Rockenhausen · Dörnbach · Gundersweiler
+        </p>
       </div>
+
+      <div class="rotation-note">
+        automatischer Wechsel<br>
+        alle 3,5 Sekunden
+      </div>
+
+    </div>
+
+    <div
+      id="activeTeamName"
+      class="team-name"
+    >
+      1. Mannschaft
+    </div>
+
+    <div
+      id="activeLeague"
+      class="team-league"
+    >
+      Bezirksliga Westpfalz
+    </div>
+
+    <div class="team-dots">
+
+      <span
+        class="team-dot active"
+        data-dot="0"
+      ></span>
+
+      <span
+        class="team-dot"
+        data-dot="1"
+      ></span>
+
+      <span
+        class="team-dot"
+        data-dot="2"
+      ></span>
+
+    </div>
+
+  </header>
+
+
+  <div class="slides">
+
+
+    <!-- ===================================== -->
+    <!-- 1. MANNSCHAFT                       -->
+    <!-- ===================================== -->
+
+    <section
+      class="team-slide active"
+      data-team="0"
+      aria-hidden="false"
+    >
+
+      <article class="card">
+
+        <div class="card-title">
+
+          <span>
+            ⚽ Nächstes Spiel
+          </span>
+
+          <span>
+            1. Mannschaft
+          </span>
+
+        </div>
+
+        <div
+          class="fussballde_widget"
+          data-id="a35b42e1-7552-4695-849b-3f25f1ae1dcc"
+          data-type="next-match"
+          style="width:100%">
+        </div>
+
+      </article>
+
+
+      <article class="card">
+
+        <div class="card-title">
+
+          <span>
+            📊 Tabelle
+          </span>
+
+          <span>
+            Bezirksliga Westpfalz
+          </span>
+
+        </div>
+
+        <div
+          class="fussballde_widget"
+          data-id="89826e99-bff3-4394-bb3c-38cf54766f4e"
+          data-type="table"
+          style="width:100%">
+        </div>
+
+      </article>
+
     </section>
 
-    <section class="card">
-      <div class="title">📊 Bezirksliga Westpfalz</div>
 
-      <div
-        class="fussballde_widget"
-        data-id="89826e99-bff3-4394-bb3c-38cf54766f4e"
-        data-type="table"
-        style="width:100%">
-      </div>
+    <!-- ===================================== -->
+    <!-- 2. MANNSCHAFT                       -->
+    <!-- ===================================== -->
+
+    <section
+      class="team-slide"
+      data-team="1"
+      aria-hidden="true"
+    >
+
+      <article class="card">
+
+        <div class="card-title">
+
+          <span>
+            ⚽ Nächstes Spiel
+          </span>
+
+          <span>
+            2. Mannschaft
+          </span>
+
+        </div>
+
+        <div
+          class="fussballde_widget"
+          data-id="ce8d05fc-9840-4b9d-8bed-7f1307c81052"
+          data-type="next-match"
+          style="width:100%">
+        </div>
+
+      </article>
+
+
+      <article class="card">
+
+        <div class="card-title">
+
+          <span>
+            📊 Tabelle
+          </span>
+
+          <span>
+            B-Klasse KL/DOB Nord
+          </span>
+
+        </div>
+
+        <div
+          class="fussballde_widget"
+          data-id="108d3e0a-3b9b-4cd9-81e1-7520ec880b57"
+          data-type="table"
+          style="width:100%">
+        </div>
+
+      </article>
+
     </section>
 
-  </main>
+
+    <!-- ===================================== -->
+    <!-- 3. MANNSCHAFT                       -->
+    <!-- ===================================== -->
+
+    <section
+      class="team-slide"
+      data-team="2"
+      aria-hidden="true"
+    >
+
+      <article class="card">
+
+        <div class="card-title">
+
+          <span>
+            ⚽ Nächstes Spiel
+          </span>
+
+          <span>
+            3. Mannschaft
+          </span>
+
+        </div>
+
+        <div
+          class="fussballde_widget"
+          data-id="10c800a5-84fc-416c-81b1-463bbddf8458"
+          data-type="next-match"
+          style="width:100%">
+        </div>
+
+      </article>
+
+
+      <article class="card">
+
+        <div class="card-title">
+
+          <span>
+            📊 Tabelle
+          </span>
+
+          <span>
+            C-Klasse KL/DOB Nord
+          </span>
+
+        </div>
+
+        <div
+          class="fussballde_widget"
+          data-id="de479486-673d-4ee4-b9d2-6a991cab90e9"
+          data-type="table"
+          style="width:100%">
+        </div>
+
+      </article>
+
+    </section>
+
+
+  </div>
+
+</main>
+
+
+<script>
+
+  const teams = [
+
+    {
+      name: "1. Mannschaft",
+      league: "Bezirksliga Westpfalz"
+    },
+
+    {
+      name: "2. Mannschaft",
+      league: "B-Klasse KL/DOB Nord"
+    },
+
+    {
+      name: "3. Mannschaft",
+      league: "C-Klasse KL/DOB Nord"
+    }
+
+  ];
+
+
+  const slides =
+    [...document.querySelectorAll(".team-slide")];
+
+  const dots =
+    [...document.querySelectorAll(".team-dot")];
+
+  const teamName =
+    document.querySelector("#activeTeamName");
+
+  const leagueName =
+    document.querySelector("#activeLeague");
+
+
+  let activeTeam = 0;
+
+
+  function showTeam(index){
+
+    activeTeam = index;
+
+    slides.forEach(
+      (slide, slideIndex) => {
+
+        const active =
+          slideIndex === activeTeam;
+
+        slide.classList.toggle(
+          "active",
+          active
+        );
+
+        slide.setAttribute(
+          "aria-hidden",
+          active ? "false" : "true"
+        );
+
+      }
+    );
+
+
+    dots.forEach(
+      (dot, dotIndex) => {
+
+        dot.classList.toggle(
+          "active",
+          dotIndex === activeTeam
+        );
+
+      }
+    );
+
+
+    teamName.textContent =
+      teams[activeTeam].name;
+
+    leagueName.textContent =
+      teams[activeTeam].league;
+
+  }
+
+
+  setInterval(
+    () => {
+
+      showTeam(
+        (activeTeam + 1) % teams.length
+      );
+
+    },
+    3500
+  );
+
+</script>
 
 </body>
 </html>
