@@ -1,0 +1,473 @@
+<title>Momo Bewegungs-Rig</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700&display=swap">
+<style>
+  :root {
+    --bg: #f3f5f1;
+    --surface: #ffffff;
+    --ink: #1c211d;
+    --muted: #5d685f;
+    --line: #d6ddd5;
+    --accent: #2f7a55;
+    --accent-ink: #ffffff;
+    --accent-soft: #e2efe7;
+    --focus: #1f5fbf;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --bg: #141815;
+      --surface: #1d231f;
+      --ink: #e8ede8;
+      --muted: #9aa79d;
+      --line: #313b34;
+      --accent: #5cc08d;
+      --accent-ink: #0f1a13;
+      --accent-soft: #223328;
+      --focus: #8ab4ff;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --bg: #141815;
+    --surface: #1d231f;
+    --ink: #e8ede8;
+    --muted: #9aa79d;
+    --line: #313b34;
+    --accent: #5cc08d;
+    --accent-ink: #0f1a13;
+    --accent-soft: #223328;
+    --focus: #8ab4ff;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Nunito Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+  }
+  .wrap {
+    max-width: 980px;
+    margin: 0 auto;
+    padding-inline: 20px;
+    padding-block: 28px 40px;
+    display: grid;
+    gap: 20px;
+  }
+  header { display: grid; gap: 2px; }
+  .eyebrow {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  h1 {
+    font-family: "Baloo 2", "Nunito Sans", system-ui, sans-serif;
+    font-weight: 800;
+    font-size: clamp(30px, 6vw, 44px);
+    line-height: 1.05;
+    margin: 0;
+    text-wrap: balance;
+  }
+  .layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+    gap: 20px;
+    align-items: start;
+  }
+  @media (max-width: 760px) { .layout { grid-template-columns: 1fr; } }
+
+  /* The stage stays paper-white in both themes: Momo is coloring-book line art. */
+  .stage {
+    background: #ffffff;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+  #bones[hidden] { display: none; }
+  .stage svg { display: block; width: 100%; height: auto; max-width: 100%; }
+
+  .panel { display: grid; gap: 18px; }
+  .group { display: grid; gap: 8px; }
+  .label {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .moves { display: flex; flex-wrap: wrap; gap: 8px; }
+  button {
+    font: inherit;
+    font-weight: 700;
+    color: var(--ink);
+    background: var(--surface);
+    border: 1.5px solid var(--line);
+    border-radius: 999px;
+    padding: 8px 16px;
+    cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); }
+  button[aria-pressed="true"] {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--accent-ink);
+  }
+  button:focus-visible, input:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+  .row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  input[type="range"] { flex: 1; min-width: 0; accent-color: var(--accent); }
+  .val { font-variant-numeric: tabular-nums; font-weight: 700; min-width: 3.5ch; text-align: right; }
+  .check { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+  .check input { accent-color: var(--accent); width: 18px; height: 18px; }
+  .note {
+    background: var(--accent-soft);
+    border-radius: 12px;
+    padding: 14px 16px;
+    display: grid;
+    gap: 6px;
+  }
+  .note p { margin: 0; max-width: 60ch; }
+  .note strong { font-weight: 700; }
+</style>
+
+<div class="wrap">
+  <header>
+    <span class="eyebrow">Black-Box Sports Academy</span>
+    <h1>Momo, die Schildkröte</h1>
+  </header>
+
+  <div class="layout">
+    <div class="stage">
+      <svg id="stage" viewBox="0 0 400 600" role="img" aria-label="Momo, eine Comic-Schildkröte im Karate-Gi, animiert">
+        <defs>
+          <!-- Arm, drawn hanging down from the shoulder joint at (0,0). -->
+          <g id="hand">
+            <path d="M -15 -2 C -21 12 -17 30 0 32 C 17 30 21 12 15 -2 Z" />
+            <path d="M 12 4 C 26 4 29 20 16 23" />
+            <path d="M -6 30 L -6 22 M 2 32 L 2 23 M 9 29 L 9 22" class="thin" />
+          </g>
+          <g id="foot">
+            <path d="M -30 10 C -32 -8 32 -8 30 10 C 32 26 20 32 12 27 C 7 33 -7 33 -12 27 C -20 32 -32 26 -30 10 Z" />
+            <path d="M -12 27 C -10 20 -8 16 -6 12 M 12 27 C 10 20 8 16 6 12" class="thin" />
+          </g>
+        </defs>
+
+        <g fill="#ffffff" stroke="#111111" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+          <!-- round training mat, like the one in the drawing -->
+          <ellipse cx="200" cy="552" rx="160" ry="30" />
+          <ellipse cx="200" cy="549" rx="146" ry="23" stroke-width="2.5" />
+
+          <g id="root">
+            <!-- shell (moves with torso) -->
+            <g id="shell">
+              <ellipse cx="200" cy="330" rx="98" ry="108" />
+              <ellipse cx="200" cy="330" rx="82" ry="92" stroke-width="3.5" />
+              <path class="thin" d="M 102 330 L 118 330 M 107 285 L 122 292 M 107 375 L 122 368 M 125 245 L 137 258 M 125 415 L 137 402 M 298 330 L 282 330 M 293 285 L 278 292 M 293 375 L 278 368 M 275 245 L 263 258 M 275 415 L 263 402 M 160 227 L 166 243 M 240 227 L 234 243" />
+            </g>
+
+            <!-- legs -->
+            <g id="legL"></g>
+            <g id="legR"></g>
+
+            <g id="upper">
+              <!-- gi jacket -->
+              <path d="M 138 290 C 146 270 254 270 262 290 L 274 396 C 240 412 160 412 126 396 Z" />
+              <!-- lapels -->
+              <path d="M 244 276 L 196 346 L 184 336 L 226 276 Z" />
+              <path d="M 156 276 L 214 366 L 232 356 L 178 276 Z" />
+              <path d="M 150 300 C 150 330 146 360 142 388 M 250 300 C 250 330 254 360 258 388" class="thin" />
+              <!-- belt -->
+              <path d="M 130 372 C 170 382 230 382 270 372 L 272 394 C 230 404 170 404 128 394 Z" />
+              <path d="M 196 386 L 184 440 L 200 440 L 204 392 Z" />
+              <path d="M 204 386 L 222 438 L 236 432 L 212 386 Z" />
+              <rect x="186" y="370" width="28" height="26" rx="6" />
+
+              <g id="armL"></g>
+              <g id="armR"></g>
+
+              <!-- head -->
+              <g id="head">
+                <path d="M 108 180 C 100 110 140 58 202 58 C 266 58 306 108 298 178 C 292 232 250 264 200 264 C 150 264 114 232 108 180 Z" />
+                <path class="thin" d="M 128 104 C 138 88 150 80 160 76" />
+                <g id="eyes">
+                  <ellipse cx="160" cy="168" rx="26" ry="33" />
+                  <ellipse cx="244" cy="168" rx="26" ry="33" />
+                  <ellipse cx="166" cy="174" rx="17" ry="23" fill="#111111" />
+                  <ellipse cx="238" cy="174" rx="17" ry="23" fill="#111111" />
+                  <circle cx="171" cy="164" r="7" fill="#ffffff" stroke="none" />
+                  <circle cx="243" cy="164" r="7" fill="#ffffff" stroke="none" />
+                  <circle cx="160" cy="185" r="3" fill="#ffffff" stroke="none" />
+                  <circle cx="232" cy="185" r="3" fill="#ffffff" stroke="none" />
+                </g>
+                <path class="thin" d="M 140 124 C 150 118 164 118 172 124 M 232 124 C 240 118 254 118 264 124" />
+                <!-- snout and nostrils -->
+                <path class="thin" d="M 186 206 C 194 198 212 198 220 206" fill="none" />
+                <circle cx="197" cy="210" r="2.5" fill="#111111" stroke="none" />
+                <circle cx="209" cy="210" r="2.5" fill="#111111" stroke="none" />
+                <!-- blush -->
+                <ellipse cx="128" cy="214" rx="13" ry="8" stroke-width="3" />
+                <ellipse cx="278" cy="214" rx="13" ry="8" stroke-width="3" />
+                <path class="thin" d="M 122 212 L 126 216 M 130 211 L 134 215 M 272 212 L 276 216 M 280 211 L 284 215" />
+                <!-- open smile with tongue -->
+                <path d="M 160 222 C 176 226 228 226 246 220 C 244 250 226 262 203 262 C 180 262 162 250 160 222 Z" fill="#111111" />
+                <path d="M 180 252 C 186 240 220 240 226 252 C 218 260 188 260 180 252 Z" stroke="none" />
+              </g>
+            </g>
+          </g>
+
+          <!-- joint markers (toggle) -->
+          <g id="bones" fill="#2f7a55" stroke="none" hidden></g>
+        </g>
+      </svg>
+    </div>
+
+    <div class="panel">
+      <div class="group">
+        <span class="label" id="moves-label">Bewegung</span>
+        <div class="moves" role="group" aria-labelledby="moves-label" id="moves"></div>
+      </div>
+
+      <div class="group">
+        <label class="label" for="speed">Tempo</label>
+        <div class="row">
+          <input type="range" id="speed" min="0.3" max="1.8" step="0.1" value="1">
+          <span class="val" id="speed-val">1.0×</span>
+          <button type="button" id="pause" aria-pressed="false">Pause</button>
+        </div>
+      </div>
+
+      <label class="check" for="show-bones">
+        <input type="checkbox" id="show-bones">
+        Gelenke anzeigen
+      </label>
+
+      <div class="note">
+        <p><strong>Das sind Testbewegungen.</strong> Sie zeigen, dass Momos Gelenke funktionieren: Schultern, Ellbogen, Hüfte, Knie, Kopf und Rumpf.</p>
+        <p>Die Bewegung aus deinem Video kommt als eigene Schaltfläche dazu, sobald ich das Video als Datei habe oder du sie beschreibst.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+  const NS = "http://www.w3.org/2000/svg";
+  const $ = (id) => document.getElementById(id);
+  const style = document.createElementNS(NS, "style");
+  style.textContent = ".thin{stroke-width:3;fill:none}";
+  $("stage").prepend(style);
+
+  // Skeleton constants (SVG units)
+  const HIP = { L: [174, 402], R: [226, 402] };
+  const SHOULDER = { L: [142, 298], R: [258, 298] };
+  const THIGH = 60, SHIN = 50, FOOT_H = 28, FLOOR = 540;
+  const UPPER_ARM = 52, FOREARM = 44;
+
+  // Build one limb pair from a template; mirror the right side.
+  function buildArm(g) {
+    g.innerHTML = `
+      <g class="sh">
+        <g class="el">
+          <g class="hd"><use href="#hand"/></g>
+          <path d="M -21 0 C -21 -10 21 -10 21 0 L 22 42 C 10 48 -10 48 -22 42 Z"/>
+          <path class="thin" d="M -21 33 C -8 38 8 38 21 33"/>
+        </g>
+        <g class="ua"><path d="M -21 -10 C -23 -24 23 -24 21 -10 L 23 54 C 12 60 -12 60 -23 54 Z"/></g>
+      </g>`;
+  }
+  function buildLeg(g) {
+    g.innerHTML = `
+      <g class="hp">
+        <g class="kn">
+          <g class="ft"><use href="#foot"/></g>
+          <path d="M -25 -8 L 25 -8 L 24 50 C 10 54 -10 54 -24 50 Z"/>
+          <path class="thin" d="M -24 40 C -10 44 10 44 24 40"/>
+        </g>
+        <g class="th"><path d="M -27 -14 L 27 -14 L 26 60 C 12 66 -12 66 -26 60 Z"/></g>
+      </g>`;
+  }
+  ["armL", "armR"].forEach((id) => buildArm($(id)));
+  ["legL", "legR"].forEach((id) => buildLeg($(id)));
+  // Arms are drawn over the jacket but under the head.
+  const head = $("head");
+  head.parentNode.insertBefore($("armL"), head);
+  head.parentNode.insertBefore($("armR"), head);
+
+  const q = (root, sel) => root.querySelector(sel);
+  const rad = (d) => (d * Math.PI) / 180;
+
+  // Pose: angles in degrees, positive = limb swings outward (away from body).
+  const REST = {
+    x: 0, air: 0, torso: 0, head: 0,
+    shL: 8, elL: -6, uaL: 1, shR: 8, elR: -6, uaR: 1,
+    hipL: 3, knL: -3, thL: 1, hipR: 3, knR: -3, thR: 1,
+    blink: 0,
+  };
+
+  function footBottom(hip, kn, th) {
+    // y of the foot sole below the hip joint
+    return THIGH * th * Math.cos(rad(hip)) + SHIN * Math.cos(rad(hip + kn)) + FOOT_H;
+  }
+
+  function apply(p) {
+    // keep the lower foot on the floor, then add jump height
+    const dropL = footBottom(p.hipL, p.knL, p.thL);
+    const dropR = footBottom(p.hipR, p.knR, p.thR);
+    const y = FLOOR - HIP.L[1] - Math.max(dropL, dropR) - p.air;
+    $("root").setAttribute("transform", `translate(${p.x} ${y})`);
+
+    const torsoT = `rotate(${p.torso} 200 402)`;
+    $("upper").setAttribute("transform", torsoT);
+    $("shell").setAttribute("transform", torsoT);
+    head.setAttribute("transform", `rotate(${p.head} 200 262)`);
+    $("eyes").setAttribute("transform", `translate(0 ${168 * p.blink}) scale(1 ${1 - p.blink})`);
+
+    for (const s of ["L", "R"]) {
+      const m = s === "L" ? 1 : -1;
+      const arm = $("arm" + s), leg = $("leg" + s);
+      const [sx, sy] = SHOULDER[s];
+      q(arm, ".sh").setAttribute("transform", `translate(${sx} ${sy}) scale(${m} 1) rotate(${p["sh" + s]})`);
+      q(arm, ".ua").setAttribute("transform", `scale(1 ${p["ua" + s]})`);
+      q(arm, ".el").setAttribute("transform", `translate(0 ${UPPER_ARM * p["ua" + s]}) rotate(${p["el" + s]})`);
+      q(arm, ".hd").setAttribute("transform", `translate(0 ${FOREARM})`);
+
+      const [hx, hy] = HIP[s];
+      const hip = p["hip" + s], kn = p["kn" + s], th = p["th" + s];
+      q(leg, ".hp").setAttribute("transform", `translate(${hx} ${hy}) scale(${m} 1) rotate(${hip})`);
+      q(leg, ".th").setAttribute("transform", `scale(1 ${th})`);
+      q(leg, ".kn").setAttribute("transform", `translate(0 ${THIGH * th}) rotate(${kn})`);
+      q(leg, ".ft").setAttribute("transform", `translate(0 ${SHIN}) rotate(${-(hip + kn)})`);
+    }
+    if (!$("bones").hidden) drawBones(p, y);
+  }
+
+  function drawBones(p, y) {
+    const pts = [];
+    for (const s of ["L", "R"]) {
+      const m = s === "L" ? -1 : 1;
+      const [hx, hy] = HIP[s];
+      const hip = p["hip" + s], kn = p["kn" + s], th = p["th" + s];
+      const kx = hx + m * THIGH * th * Math.sin(rad(hip)), ky = hy + THIGH * th * Math.cos(rad(hip));
+      const ax = kx + m * SHIN * Math.sin(rad(hip + kn)), ay = ky + SHIN * Math.cos(rad(hip + kn));
+      pts.push([hx, hy + y], [kx, ky + y], [ax, ay + y]);
+    }
+    $("bones").innerHTML = pts.map(([x, yy]) => `<circle cx="${x + p.x}" cy="${yy}" r="6"/>`).join("");
+  }
+
+  const wave = (t) => Math.sin(2 * Math.PI * t);
+  const ease = (t) => (1 - Math.cos(2 * Math.PI * t)) / 2; // 0 → 1 → 0
+
+  const MOVES = {
+    stehen: {
+      name: "Stehen", period: 3.2,
+      pose: (t) => ({
+        head: 3 * wave(t), torso: 0.8 * wave(t + 0.25),
+        shL: 8 + 3 * wave(t), shR: 8 + 3 * wave(t + 0.5),
+      }),
+    },
+    gehen: {
+      name: "Gehen am Ort", period: 1.1,
+      pose: (t) => {
+        const l = Math.max(0, wave(t)), r = Math.max(0, -wave(t));
+        return {
+          thL: 1 - 0.55 * l, thR: 1 - 0.55 * r,
+          hipL: 3 - 4 * l, hipR: 3 - 4 * r,
+          shL: 10 + 14 * r, elL: -6 - 40 * r, uaL: 1 - 0.25 * r,
+          shR: 10 + 14 * l, elR: -6 - 40 * l, uaR: 1 - 0.25 * l,
+          torso: 2 * wave(t), head: -2 * wave(t),
+        };
+      },
+    },
+    hampelmann: {
+      name: "Hampelmann", period: 1.0,
+      pose: (t) => {
+        const s = ease(t);
+        return {
+          shL: 8 + 150 * s, shR: 8 + 150 * s,
+          elL: -6 + 10 * s, elR: -6 + 10 * s,
+          hipL: 3 + 17 * s, hipR: 3 + 17 * s,
+          knL: -3 - 6 * s, knR: -3 - 6 * s,
+          air: 26 * Math.abs(Math.sin(2 * Math.PI * t)),
+          head: 0,
+        };
+      },
+    },
+    kniebeuge: {
+      name: "Kniebeuge", period: 2.2,
+      pose: (t) => {
+        const s = ease(t);
+        return {
+          hipL: 3 + 38 * s, hipR: 3 + 38 * s,
+          knL: -3 - 36 * s, knR: -3 - 36 * s,
+          thL: 1 - 0.45 * s, thR: 1 - 0.45 * s,
+          shL: 8 - 16 * s, shR: 8 - 16 * s,
+          uaL: 1 - 0.55 * s, uaR: 1 - 0.55 * s,
+          elL: -6 - 20 * s, elR: -6 - 20 * s,
+          head: 0,
+        };
+      },
+    },
+  };
+
+  let current = "gehen";
+  let speed = 1, paused = false, phase = 0, last = null, clock = 0;
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (reduced) { paused = true; }
+
+  const movesEl = $("moves");
+  for (const [key, mv] of Object.entries(MOVES)) {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.textContent = mv.name;
+    b.dataset.move = key;
+    b.setAttribute("aria-pressed", String(key === current));
+    b.addEventListener("click", () => {
+      current = key; phase = 0;
+      movesEl.querySelectorAll("button").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+      if (paused) render();
+    });
+    movesEl.append(b);
+  }
+
+  $("speed").addEventListener("input", (e) => {
+    speed = parseFloat(e.target.value);
+    $("speed-val").textContent = speed.toFixed(1) + "×";
+  });
+  const pauseBtn = $("pause");
+  const syncPause = () => {
+    pauseBtn.textContent = paused ? "Weiter" : "Pause";
+    pauseBtn.setAttribute("aria-pressed", String(paused));
+  };
+  pauseBtn.addEventListener("click", () => { paused = !paused; syncPause(); });
+  syncPause();
+  $("show-bones").addEventListener("change", (e) => {
+    $("bones").hidden = !e.target.checked;
+    if (!e.target.checked) $("bones").innerHTML = "";
+    render();
+  });
+
+  function render() {
+    const mv = MOVES[current];
+    const b = clock % 3.6;
+    const blink = b < 0.12 ? Math.sin((b / 0.12) * Math.PI) * 0.9 : 0;
+    apply({ ...REST, ...mv.pose(phase), blink });
+  }
+
+  function frame(now) {
+    if (last === null) last = now;
+    const dt = Math.min(0.05, (now - last) / 1000);
+    last = now;
+    if (!paused) {
+      phase = (phase + (dt * speed) / MOVES[current].period) % 1;
+      clock += dt;
+    }
+    render();
+    requestAnimationFrame(frame);
+  }
+  render();
+  requestAnimationFrame(frame);
+})();
+</script>
