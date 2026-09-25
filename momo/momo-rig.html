@@ -175,151 +175,79 @@
 
   <div class="layout">
     <div class="stage">
-      <svg id="stage" viewBox="0 0 400 600" role="img" aria-label="Momo, eine Comic-Schildkröte im Karate-Gi, läuft Saju Jirugi">
+      <svg id="stage" viewBox="170 290 700 1050" role="img" aria-label="Momo, die Comic-Schildkröte im Dobok, läuft Saju Jirugi">
         <defs>
-          <g id="hand">
-            <path d="M -15 -2 C -21 12 -17 30 0 32 C 17 30 21 12 15 -2 Z" />
-            <path d="M 12 4 C 26 4 29 20 16 23" />
-            <path d="M -6 30 L -6 22 M 2 32 L 2 23 M 9 29 L 9 22" class="thin" />
+          <!-- vector shell used where a cut-out piece leaves a gap, and for the back view -->
+          <g id="shellSide">
+            <ellipse cx="472" cy="862" rx="164" ry="170" stroke-width="7" />
+            <ellipse cx="472" cy="862" rx="136" ry="144" stroke-width="5" />
+            <path class="thin" d="M 310 862 L 336 862 M 318 800 L 342 808 M 340 744 L 360 760" />
           </g>
-          <g id="fist">
-            <path d="M -17 -2 C -21 10 -19 28 0 30 C 19 28 21 10 17 -2 Z" />
-            <path d="M -13 12 C -4 15 4 15 13 12 M -13 21 C -4 24 4 24 13 21" class="thin" />
-            <path d="M 15 4 C 6 8 2 10 -2 16" class="thin" />
-          </g>
-          <g id="foot">
-            <path d="M -30 10 C -32 -8 32 -8 30 10 C 32 26 20 32 12 27 C 7 33 -7 33 -12 27 C -20 32 -32 26 -30 10 Z" />
-            <path d="M -12 27 C -10 20 -8 16 -6 12 M 12 27 C 10 20 8 16 6 12" class="thin" />
-          </g>
-          <!-- profile foot: toes point to local -x (the side rig is mirrored so -x is forward) -->
-          <g id="footSide">
-            <path d="M 16 -4 C 22 14 18 28 4 29 L -30 29 C -44 29 -46 16 -38 10 C -30 2 -8 -6 16 -4 Z" />
-            <path d="M -30 29 C -32 24 -32 20 -30 16 M -18 29 C -20 24 -20 20 -18 17" class="thin" />
-          </g>
-          <g id="headFront">
-            <path d="M 108 180 C 100 110 140 58 202 58 C 266 58 306 108 298 178 C 292 232 250 264 200 264 C 150 264 114 232 108 180 Z" />
-            <path class="thin" d="M 128 104 C 138 88 150 80 160 76" />
-            <g class="eyes">
-              <ellipse cx="160" cy="168" rx="26" ry="33" />
-              <ellipse cx="244" cy="168" rx="26" ry="33" />
-              <ellipse cx="166" cy="174" rx="17" ry="23" fill="#111111" />
-              <ellipse cx="238" cy="174" rx="17" ry="23" fill="#111111" />
-              <circle cx="171" cy="164" r="7" fill="#ffffff" stroke="none" />
-              <circle cx="243" cy="164" r="7" fill="#ffffff" stroke="none" />
-              <circle cx="160" cy="185" r="3" fill="#ffffff" stroke="none" />
-              <circle cx="232" cy="185" r="3" fill="#ffffff" stroke="none" />
-            </g>
-            <path class="thin" d="M 140 124 C 150 118 164 118 172 124 M 232 124 C 240 118 254 118 264 124" />
-            <path class="thin" d="M 186 206 C 194 198 212 198 220 206" />
-            <circle cx="197" cy="210" r="2.5" fill="#111111" stroke="none" />
-            <circle cx="209" cy="210" r="2.5" fill="#111111" stroke="none" />
-            <ellipse cx="128" cy="214" rx="13" ry="8" stroke-width="3" />
-            <ellipse cx="278" cy="214" rx="13" ry="8" stroke-width="3" />
-            <path class="thin" d="M 122 212 L 126 216 M 130 211 L 134 215 M 272 212 L 276 216 M 280 211 L 284 215" />
-            <path d="M 160 222 C 176 226 228 226 246 220 C 244 250 226 262 203 262 C 180 262 162 250 160 222 Z" fill="#111111" />
-            <path d="M 180 252 C 186 240 220 240 226 252 C 218 260 188 260 180 252 Z" stroke="none" />
+          <g id="shellBack">
+            <ellipse cx="520" cy="850" rx="178" ry="196" />
+            <ellipse cx="520" cy="850" rx="146" ry="162" stroke-width="6" />
+            <path class="thin" d="M 342 850 L 374 850 M 698 850 L 666 850 M 360 760 L 388 776 M 680 760 L 652 776 M 360 940 L 388 924 M 680 940 L 652 924 M 404 690 L 424 714 M 636 690 L 616 714 M 404 1010 L 424 986 M 636 1010 L 616 986 M 520 654 L 520 688 M 520 1046 L 520 1012" />
+            <path d="M 520 770 L 580 806 L 580 894 L 520 930 L 460 894 L 460 806 Z" stroke-width="6" />
+            <path d="M 520 770 L 520 688 M 580 806 L 650 770 M 580 894 L 652 930 M 520 930 L 520 1012 M 460 894 L 388 930 M 460 806 L 390 770" stroke-width="6" />
           </g>
         </defs>
 
-        <g fill="#ffffff" stroke="#111111" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
-          <!-- round training mat, like the one in the drawing -->
-          <ellipse cx="200" cy="552" rx="160" ry="30" />
-          <ellipse cx="200" cy="549" rx="146" ry="23" stroke-width="2.5" />
+        <g fill="#ffffff" stroke="#111111" stroke-width="8" stroke-linecap="round" stroke-linejoin="round">
+          <ellipse cx="520" cy="1250" rx="300" ry="52" />
+          <ellipse cx="520" cy="1246" rx="270" ry="38" stroke-width="4" />
 
           <g id="turn">
-            <!-- FRONT VIEW -->
             <g class="view" id="vFront">
               <g class="root">
-                <g class="torsoT">
-                  <ellipse cx="200" cy="330" rx="98" ry="108" />
-                  <ellipse cx="200" cy="330" rx="82" ry="92" stroke-width="3.5" />
-                  <path class="thin" d="M 102 330 L 118 330 M 107 285 L 122 292 M 107 375 L 122 368 M 125 245 L 137 258 M 125 415 L 137 402 M 298 330 L 282 330 M 293 285 L 278 292 M 293 375 L 278 368 M 275 245 L 263 258 M 275 415 L 263 402 M 160 227 L 166 243 M 240 227 L 234 243" />
-                </g>
+                <g class="torsoT"><use href="#shellSide" /></g>
                 <g class="legL"></g>
                 <g class="legR"></g>
                 <g class="torsoT">
-                  <path d="M 138 290 C 146 270 254 270 262 290 L 274 396 C 240 412 160 412 126 396 Z" />
-                  <path d="M 244 276 L 196 346 L 184 336 L 226 276 Z" />
-                  <path d="M 156 276 L 214 366 L 232 356 L 178 276 Z" />
-                  <path d="M 150 300 C 150 330 146 360 142 388 M 250 300 C 250 330 254 360 258 388" class="thin" />
-                  <path d="M 130 372 C 170 382 230 382 270 372 L 272 394 C 230 404 170 404 128 394 Z" />
-                  <path d="M 196 386 L 184 440 L 200 440 L 204 392 Z" />
-                  <path d="M 204 386 L 222 438 L 236 432 L 212 386 Z" />
-                  <rect x="186" y="370" width="28" height="26" rx="6" />
+                  <image href="assets/torso4.png" x="301" y="660" width="375" height="359" />
                   <g class="armL"></g>
                   <g class="armR"></g>
-                  <g class="head"><use href="#headFront" /></g>
+                  <g class="head"><image href="assets/head4.png" x="318" y="390" width="387" height="311" /></g>
                 </g>
               </g>
             </g>
 
-            <!-- BACK VIEW -->
             <g class="view" id="vBack" hidden>
               <g class="root">
                 <g class="legL"></g>
                 <g class="legR"></g>
                 <g class="torsoT">
-                  <path d="M 138 290 C 146 270 254 270 262 290 L 274 396 C 240 412 160 412 126 396 Z" />
-                  <path d="M 130 372 C 170 382 230 382 270 372 L 272 394 C 230 404 170 404 128 394 Z" />
-                  <!-- the shell covers most of the back -->
-                  <ellipse cx="200" cy="338" rx="96" ry="112" />
-                  <ellipse cx="200" cy="338" rx="80" ry="96" stroke-width="3.5" />
-                  <path d="M 200 290 L 236 312 L 236 360 L 200 382 L 164 360 L 164 312 Z" stroke-width="4" />
-                  <path class="thin" d="M 200 290 L 200 242 M 236 312 L 272 290 M 236 360 L 274 382 M 200 382 L 200 434 M 164 360 L 126 382 M 164 312 L 128 290 M 120 338 L 104 338 M 280 338 L 296 338" />
+                  <g transform="translate(1040 0) scale(-1 1)">
+                    <image href="assets/torso4.png" x="301" y="660" width="375" height="359" />
+                  </g>
+                  <use href="#shellBack" />
                   <g class="armL"></g>
                   <g class="armR"></g>
-                  <g class="head">
-                    <path d="M 108 180 C 100 110 140 58 202 58 C 266 58 306 108 298 178 C 292 232 250 264 200 264 C 150 264 114 232 108 180 Z" />
-                    <path class="thin" d="M 150 236 C 170 250 230 250 250 236" />
-                    <path class="thin" d="M 272 104 C 262 88 250 80 240 76" />
-                  </g>
+                  <g class="head"><image href="assets/headback.png" x="318" y="390" width="387" height="311" /></g>
                 </g>
               </g>
             </g>
 
-            <!-- SIDE VIEW (drawn facing right, mirrored for left) -->
             <g class="view" id="vSide" hidden>
               <g class="face">
                 <g class="root">
                   <g class="legR"></g>
-                  <g class="torsoT">
-                    <g class="armR"></g>
-                  </g>
+                  <g class="torsoT"><g class="armR"></g></g>
                   <g class="legL"></g>
                   <g class="torsoT">
-                    <path d="M 166 284 C 176 270 232 270 242 284 L 250 396 C 228 406 186 406 160 396 Z" />
-                    <path d="M 224 276 L 246 350 L 250 336 L 240 276 Z" />
-                    <path d="M 160 374 C 190 380 224 380 250 374 L 252 396 C 224 402 190 402 158 396 Z" />
-                    <rect x="236" y="372" width="22" height="24" rx="6" />
-                    <path d="M 246 392 L 250 438 L 262 436 L 252 392 Z" />
-                    <!-- shell on the back -->
-                    <path d="M 176 262 C 112 266 92 330 100 382 C 106 416 140 428 172 414 C 160 360 162 300 176 262 Z" />
-                    <path class="thin" d="M 168 276 C 124 286 110 336 116 380 C 120 404 142 412 164 404" />
-                    <path class="thin" d="M 104 326 L 118 330 M 110 290 L 124 298 M 106 370 L 120 368 M 132 262 L 140 280 M 124 410 L 132 398" />
+                    <g transform="translate(515 0) scale(0.86 1) translate(-515 0)">
+                      <use href="#shellSide" />
+                      <image href="assets/torso4.png" x="301" y="660" width="375" height="359" />
+                    </g>
                     <g class="armL"></g>
                     <g class="head">
-                      <path d="M 116 172 C 110 104 156 60 212 62 C 270 64 304 110 300 160 C 310 176 310 196 298 212 C 286 242 252 264 206 264 C 152 264 122 228 116 172 Z" />
-                      <path class="thin" d="M 140 100 C 150 86 162 78 174 74" />
-                      <g class="eyes">
-                        <ellipse cx="252" cy="160" rx="22" ry="31" />
-                        <ellipse cx="260" cy="166" rx="14" ry="21" fill="#111111" />
-                        <circle cx="264" cy="156" r="6" fill="#ffffff" stroke="none" />
-                        <circle cx="255" cy="176" r="2.5" fill="#ffffff" stroke="none" />
-                      </g>
-                      <path class="thin" d="M 232 118 C 242 112 256 112 266 118" />
-                      <circle cx="298" cy="190" r="2.5" fill="#111111" stroke="none" />
-                      <ellipse cx="226" cy="212" rx="12" ry="8" stroke-width="3" />
-                      <path class="thin" d="M 221 210 L 225 214 M 229 209 L 233 213" />
-                      <path d="M 248 224 C 264 228 284 222 296 212 C 294 238 278 254 260 252 C 250 246 246 236 248 224 Z" fill="#111111" />
-                      <path d="M 256 246 C 262 238 280 236 286 242 C 280 250 264 252 256 246 Z" stroke="none" />
+                      <image href="assets/head3.png" x="84" y="627" width="329" height="263"
+                        transform="translate(540 692) scale(1.17) translate(-232 -884)" />
                     </g>
                   </g>
                 </g>
               </g>
             </g>
           </g>
-
-          <g id="bones" fill="#2f7a55" stroke="none" hidden></g>
         </g>
       </svg>
       <div class="caption" aria-live="off">
@@ -344,18 +272,13 @@
         </div>
       </div>
 
-      <label class="check" for="show-bones">
-        <input type="checkbox" id="show-bones">
-        Gelenke anzeigen
-      </label>
-
       <div class="group" id="steps-group">
         <span class="label">Ablauf Saju Jirugi</span>
         <ol class="steps" id="steps"></ol>
       </div>
 
       <div class="note">
-        <p>Die Abfolge folgt eurem Video: Fauststoß nach vorn, dann mit Abwehr nach unten und Fauststoß einmal in alle vier Richtungen. Danach das Ganze zur anderen Seite.</p>
+        <p>Momo ist aus euren Ausmalbildern ausgeschnitten: Kopf, Dobok mit Gürtel und Panzer, Ärmel, Fäuste und Beine. Die Abfolge folgt eurem Saju-Jirugi-Video.</p>
       </div>
     </div>
   </div>
@@ -366,191 +289,134 @@
   const NS = "http://www.w3.org/2000/svg";
   const $ = (id) => document.getElementById(id);
   const style = document.createElementNS(NS, "style");
-  style.textContent = ".thin{stroke-width:3;fill:none}";
+  style.textContent = ".thin{stroke-width:5;fill:none}";
   $("stage").prepend(style);
 
-  const THIGH = 60, SHIN = 50, FOOT_H = 28, FLOOR = 540;
-  const UPPER_ARM = 52, FOREARM = 44;
   const rad = (d) => (d * Math.PI) / 180;
+  const FLOOR = 1238;
+  // arm: sleeve from image 6 (scaled to image 4), fist from image 5
+  const SLEEVE = { href: "assets/sleeve6.png", box: [634, 579, 117, 112], pivot: [640, 635], cuff: 746, s: 1.18 };
+  const FIST = { href: "assets/fist5.png", box: [439, 705, 94, 108], wrist: [487, 806], s: 1.05 };
+  const ARM_LEN = (SLEEVE.cuff - SLEEVE.pivot[0]) * SLEEVE.s;
+  const LEGS = {
+    L: { href: "assets/legL4.png", box: [337, 955, 186, 281], hip: [432, 985] },
+    R: { href: "assets/legR4.png", box: [518, 955, 156, 285], hip: [598, 985] },
+  };
+  const LEG_LEN = 252;
 
-  function armMarkup() {
-    return `
-      <g class="sh">
-        <g class="el">
-          <g class="hd"><use href="#fist"/></g>
-          <g class="fa">
-            <path d="M -21 0 C -21 -10 21 -10 21 0 L 22 42 C 10 48 -10 48 -22 42 Z"/>
-            <path class="thin" d="M -21 33 C -8 38 8 38 21 33"/>
-          </g>
-        </g>
-        <g class="ua"><path d="M -21 -10 C -23 -24 23 -24 21 -10 L 23 54 C 12 60 -12 60 -23 54 Z"/></g>
-      </g>`;
-  }
-  function legMarkup(foot) {
-    return `
-      <g class="hp">
-        <g class="kn">
-          <g class="ft"><use href="#${foot}"/></g>
-          <path d="M -25 -8 L 25 -8 L 24 50 C 10 54 -10 54 -24 50 Z"/>
-          <path class="thin" d="M -24 40 C -10 44 10 44 24 40"/>
-        </g>
-        <g class="th"><path d="M -27 -14 L 27 -14 L 26 60 C 12 66 -12 66 -26 60 Z"/></g>
-      </g>`;
+  function el(tag, attrs, parent) {
+    const e = document.createElementNS(NS, tag);
+    for (const k in attrs) e.setAttribute(k, attrs[k]);
+    if (parent) parent.append(e);
+    return e;
   }
 
-  // Each view is a small cut-out rig. mirror: +1 means a positive angle swings
-  // the limb to the viewer's left. Front/back: positive = outward. Side: positive = forward.
+  function buildArm(g) {
+    const sh = el("g", {}, g);
+    const sleeve = el("g", {}, sh);
+    const inner = el("g", { transform: `rotate(90) scale(${SLEEVE.s}) translate(${-SLEEVE.pivot[0]} ${-SLEEVE.pivot[1]})` }, sleeve);
+    const [x, y, w, h] = SLEEVE.box;
+    el("image", { href: SLEEVE.href, x, y, width: w, height: h }, inner);
+    const fist = el("g", {}, sh);
+    const [fx, fy, fw, fh] = FIST.box;
+    const fi = el("g", { transform: `rotate(180) scale(${FIST.s}) translate(${-FIST.wrist[0]} ${-FIST.wrist[1]})` }, fist);
+    el("image", { href: FIST.href, x: fx, y: fy, width: fw, height: fh }, fi);
+    // the fist sits under the cuff
+    sh.insertBefore(fist, sleeve);
+    return { g, sh, sleeve, fist };
+  }
+  function buildLeg(g, s) {
+    const L = LEGS[s];
+    const [x, y, w, h] = L.box;
+    el("image", { href: L.href, x, y, width: w, height: h }, g);
+    return { g, hip: L.hip };
+  }
+
+  // sign: +1 means a positive angle swings the limb toward the viewer's left.
   function makeRig(id, cfg) {
-    const el = $(id);
-    const rig = { el, cfg, parts: {} };
+    const root = $(id);
+    const rig = { el: root, cfg, arms: {}, legs: {} };
     for (const s of ["L", "R"]) {
-      const arm = el.querySelector(".arm" + s), leg = el.querySelector(".leg" + s);
-      arm.innerHTML = armMarkup();
-      leg.innerHTML = legMarkup(cfg.foot);
-      rig.parts[s] = {
-        arm, leg,
-        sh: arm.querySelector(".sh"), ua: arm.querySelector(".ua"), elb: arm.querySelector(".el"),
-        fa: arm.querySelector(".fa"), hd: arm.querySelector(".hd"), hdUse: arm.querySelector(".hd use"),
-        hp: leg.querySelector(".hp"), th: leg.querySelector(".th"), kn: leg.querySelector(".kn"), ft: leg.querySelector(".ft"),
-      };
+      rig.arms[s] = buildArm(root.querySelector(".arm" + s));
+      rig.legs[s] = buildLeg(root.querySelector(".leg" + s), cfg.legSrc[s]);
     }
-    rig.root = el.querySelector(".root");
-    rig.torso = el.querySelectorAll(".torsoT");
-    rig.head = el.querySelector(".head");
-    rig.eyes = el.querySelector(".eyes");
+    rig.root = root.querySelector(".root");
+    rig.torso = root.querySelectorAll(".torsoT");
+    rig.head = root.querySelector(".head");
     return rig;
   }
 
   const RIGS = {
     front: makeRig("vFront", {
-      foot: "foot",
-      sh: { L: [142, 298], R: [258, 298] }, hip: { L: [174, 402], R: [226, 402] },
-      m: { L: 1, R: -1 }, waist: [200, 402], neck: [200, 262],
+      sh: { L: [448, 778], R: [628, 778] }, armSign: { L: 1, R: -1 },
+      legSrc: { L: "L", R: "R" }, legSign: { L: 1, R: -1 }, legShift: { L: 0, R: 0 },
+      waist: [515, 960], neck: [515, 690],
     }),
     back: makeRig("vBack", {
-      foot: "foot",
-      // seen from behind, Momo's left is on the viewer's left... mirrored from the front
-      sh: { L: [258, 298], R: [142, 298] }, hip: { L: [226, 402], R: [174, 402] },
-      m: { L: -1, R: 1 }, waist: [200, 402], neck: [200, 262],
+      sh: { L: [612, 778], R: [432, 778] }, armSign: { L: -1, R: 1 },
+      legSrc: { L: "R", R: "L" }, legSign: { L: -1, R: 1 }, legShift: { L: 0, R: 0 },
+      waist: [520, 960], neck: [515, 690],
     }),
     side: makeRig("vSide", {
-      foot: "footSide",
-      sh: { L: [198, 300], R: [214, 294] }, hip: { L: [198, 402], R: [214, 398] },
-      m: { L: -1, R: -1 }, waist: [205, 402], neck: [205, 262],
+      sh: { L: [505, 782], R: [535, 772] }, armSign: { L: -1, R: -1 },
+      legSrc: { L: "L", R: "R" }, legSign: { L: -1, R: -1 }, legShift: { L: 70, R: -50 },
+      waist: [515, 960], neck: [540, 692],
     }),
   };
 
-  const REST = {
-    x: 0, air: 0, torso: 0, head: 0,
-    shL: 8, elL: -6, uaL: 1, faL: 1, hideL: 0,
-    shR: 8, elR: -6, uaR: 1, faR: 1, hideR: 0,
-    hipL: 3, knL: -3, thL: 1, hipR: 3, knR: -3, thR: 1,
-    blink: 0,
-  };
+  const REST = { x: 0, air: 0, torso: 0, head: 0, shL: 6, uaL: 1, hideL: 0, shR: 6, uaR: 1, hideR: 0, hipL: 3, hipR: 3 };
 
-  function footDrop(hip, kn, th) {
-    return THIGH * th * Math.cos(rad(hip)) + SHIN * Math.cos(rad(hip + kn)) + FOOT_H;
-  }
-
-  function applyRig(rig, p, hand) {
+  function applyRig(rig, p) {
     const c = rig.cfg;
-    const hipY = c.hip.L[1];
-    const drop = Math.max(footDrop(p.hipL, p.knL, p.thL), footDrop(p.hipR, p.knR, p.thR));
-    const y = FLOOR - hipY - drop - p.air;
+    const drop = Math.max(Math.cos(rad(p.hipL)), Math.cos(rad(p.hipR))) * LEG_LEN;
+    const y = FLOOR - 985 - drop - p.air;
     rig.root.setAttribute("transform", `translate(${p.x} ${y})`);
     const t = `rotate(${p.torso} ${c.waist[0]} ${c.waist[1]})`;
     rig.torso.forEach((g) => g.setAttribute("transform", t));
     rig.head.setAttribute("transform", `rotate(${p.head} ${c.neck[0]} ${c.neck[1]})`);
-    if (rig.eyes) {
-      const cy = 168;
-      rig.eyes.setAttribute("transform", `translate(0 ${cy * p.blink}) scale(1 ${1 - p.blink})`);
-    }
     for (const s of ["L", "R"]) {
-      const P = rig.parts[s], m = c.m[s];
+      const A = rig.arms[s];
       const [sx, sy] = c.sh[s];
-      P.arm.style.display = p["hide" + s] ? "none" : "";
-      P.sh.setAttribute("transform", `translate(${sx} ${sy}) scale(${m} 1) rotate(${p["sh" + s]})`);
-      P.ua.setAttribute("transform", `scale(1 ${p["ua" + s]})`);
-      P.elb.setAttribute("transform", `translate(0 ${UPPER_ARM * p["ua" + s]}) rotate(${p["el" + s]})`);
-      P.fa.setAttribute("transform", `scale(1 ${p["fa" + s]})`);
-      P.hd.setAttribute("transform", `translate(0 ${FOREARM * p["fa" + s]})`);
-      P.hdUse.setAttribute("href", hand);
-
-      const [hx, hy] = c.hip[s];
-      const hip = p["hip" + s], kn = p["kn" + s], th = p["th" + s];
-      P.hp.setAttribute("transform", `translate(${hx} ${hy}) scale(${m} 1) rotate(${hip})`);
-      P.th.setAttribute("transform", `scale(1 ${th})`);
-      P.kn.setAttribute("transform", `translate(0 ${THIGH * th}) rotate(${kn})`);
-      P.ft.setAttribute("transform", `translate(0 ${SHIN}) rotate(${-(hip + kn)})`);
+      A.g.style.display = p["hide" + s] ? "none" : "";
+      A.sh.setAttribute("transform", `translate(${sx} ${sy}) rotate(${c.armSign[s] * p["sh" + s]})`);
+      A.sleeve.setAttribute("transform", `scale(1 ${p["ua" + s]})`);
+      A.fist.setAttribute("transform", `translate(0 ${ARM_LEN * p["ua" + s] - 6})`);
+      const Lg = rig.legs[s];
+      const [hx, hy] = Lg.hip;
+      const dx = c.legShift[s];
+      Lg.g.setAttribute("transform", `translate(${dx} 0) rotate(${c.legSign[s] * p["hip" + s]} ${hx} ${hy})` + (dx ? ` translate(${hx} 0) translate(${-hx} 0)` : ""));
     }
-    if (!$("bones").hasAttribute("hidden")) drawBones(rig, p, y);
-  }
-
-  function drawBones(rig, p, y) {
-    const c = rig.cfg, pts = [];
-    for (const s of ["L", "R"]) {
-      const m = -c.m[s];
-      const [hx, hy] = c.hip[s];
-      const hip = p["hip" + s], kn = p["kn" + s], th = p["th" + s];
-      const kx = hx + m * THIGH * th * Math.sin(rad(hip)), ky = hy + THIGH * th * Math.cos(rad(hip));
-      const ax = kx + m * SHIN * Math.sin(rad(hip + kn)), ay = ky + SHIN * Math.cos(rad(hip + kn));
-      pts.push([hx, hy], [kx, ky], [ax, ay]);
-      const [sx, sy] = c.sh[s];
-      const sa = p["sh" + s], ua = UPPER_ARM * p["ua" + s];
-      const ex = sx + m * ua * Math.sin(rad(sa)), ey = sy + ua * Math.cos(rad(sa));
-      pts.push([sx, sy], [ex, ey]);
-    }
-    $("bones").setAttribute("transform", $("turn").getAttribute("transform") || "");
-    const flip = currentView === "sideL" ? (x) => 400 - x : (x) => x;
-    $("bones").innerHTML = pts.map(([x, yy]) => `<circle cx="${flip(x + p.x)}" cy="${yy + y}" r="6"/>`).join("");
   }
 
   // ---------- Poses ----------
-  // Fists in front of the belt.
-  const ARMS_READY = { shL: 16, elL: -62, uaL: 0.9, faL: 0.8, shR: 16, elR: -62, uaR: 0.9, faR: 0.8 };
-  const chamber = (s, view) => view === "side"
-    ? { ["sh" + s]: -32, ["el" + s]: 104, ["ua" + s]: 1, ["fa" + s]: 0.85 }
-    : { ["sh" + s]: 18, ["el" + s]: -58, ["ua" + s]: 0.8, ["fa" + s]: 0.7 };
   const other = (s) => (s === "L" ? "R" : "L");
-
-  // walking stance with leg s in front
+  const READY = { hipL: 5, hipR: 5, shL: -16, uaL: 0.9, shR: -16, uaR: 0.9 };
+  const chamber = (s, view) => (view === "side"
+    ? { ["sh" + s]: -18, ["ua" + s]: 0.85 }
+    : { ["sh" + s]: 6, ["ua" + s]: 0.85 });
   function stance(s, view) {
     const o = other(s);
-    if (view === "side") {
-      return { ["hip" + s]: 28, ["kn" + s]: -30, ["hip" + o]: -26, ["kn" + o]: 4 };
-    }
-    return { ["hip" + s]: 17, ["kn" + s]: -22, ["hip" + o]: 14, ["kn" + o]: -6, ["th" + s]: 0.92 };
+    if (view === "side") return { ["hip" + s]: 24, ["hip" + o]: -22 };
+    return { ["hip" + s]: 15, ["hip" + o]: 11 };
   }
   function punch(arm, view) {
-    const base = { ...chamber(other(arm), view) };
-    if (view === "side") {
-      return { ...base, ["sh" + arm]: 88, ["el" + arm]: 0, ["ua" + arm]: 1, ["fa" + arm]: 1, torso: 2 };
-    }
-    if (view === "back") {
-      return { ...base, ["hide" + arm]: 1 };
-    }
-    // toward the viewer: strongly foreshortened arm, fist in front of the chest
-    return { ...base, ["sh" + arm]: -58, ["el" + arm]: 4, ["ua" + arm]: 0.45, ["fa" + arm]: 0.35 };
+    const base = chamber(other(arm), view);
+    if (view === "side") return { ...base, ["sh" + arm]: 90, ["ua" + arm]: 1, torso: 2 };
+    if (view === "back") return { ...base, ["hide" + arm]: 1 };
+    return { ...base, ["sh" + arm]: -62, ["ua" + arm]: 0.7, torso: -2 };
   }
   function lowBlock(arm, view) {
-    const base = { ...chamber(other(arm), view) };
-    if (view === "side") {
-      return { ...base, ["sh" + arm]: 34, ["el" + arm]: -2, ["ua" + arm]: 1, ["fa" + arm]: 1 };
-    }
-    return { ...base, ["sh" + arm]: 40, ["el" + arm]: 0, ["ua" + arm]: 1, ["fa" + arm]: 1 };
+    const base = chamber(other(arm), view);
+    if (view === "side") return { ...base, ["sh" + arm]: 38, ["ua" + arm]: 1 };
+    return { ...base, ["sh" + arm]: 36, ["ua" + arm]: 1 };
   }
-  // preparation: blocking arm folded up to the opposite shoulder
   function prepBlock(arm, view) {
-    const base = { ...chamber(other(arm), view) };
-    if (view === "side") {
-      return { ...base, ["sh" + arm]: 40, ["el" + arm]: 120, ["ua" + arm]: 0.8, ["fa" + arm]: 0.9 };
-    }
-    return { ...base, ["sh" + arm]: -20, ["el" + arm]: -150, ["ua" + arm]: 0.8, ["fa" + arm]: 0.9 };
+    const base = chamber(other(arm), view);
+    if (view === "side") return { ...base, ["sh" + arm]: 150, ["ua" + arm]: 0.7 };
+    return { ...base, ["sh" + arm]: -140, ["ua" + arm]: 0.75 };
   }
-  const readyLegs = { hipL: 8, knL: -8, hipR: 8, knR: -8 };
 
   // ---------- Saju Jirugi choreography ----------
-  // Views: front, sideL (facing viewer's left), back, sideR.
   const TERMS = {
     ready: ["Narani Junbi Sogi", "Bereitschaftsstellung"],
     punch: ["Gunnun So Kaunde Ap Jirugi", "Gehstellung, Fauststoß Mitte"],
@@ -567,61 +433,43 @@
       if (counted) count++;
       K.push({ t, view, pose: { ...REST, ...pose }, term, count: counted ? count : null });
     };
-    add(0, "front", { ...readyLegs, ...ARMS_READY }, "ready");
-    // Two runs: first turning to the left, then to the right.
+    add(0, "front", READY, "ready");
     const runs = [
       { first: "R", dirs: ["sideL", "back", "sideR", "front"] },
       { first: "L", dirs: ["sideR", "back", "sideL", "front"] },
     ];
     for (const run of runs) {
-      const lead = other(run.first);           // front leg of the first stance
+      const lead = other(run.first);
       add(1.4, "front", { ...stance(lead, "front"), ...punch(run.first, "front") }, "punch", true);
       let blockArm = lead;
       for (const dir of run.dirs) {
         const vk = viewKind(dir);
-        // turn, prepare and block with the arm on the front-leg side
         add(0.9, dir, { ...stance(blockArm, vk), ...prepBlock(blockArm, vk) }, "turn");
         add(0.35, dir, { ...stance(blockArm, vk), ...lowBlock(blockArm, vk) }, "block", true);
-        // step forward and punch with the new front leg's arm
         const next = other(blockArm);
         add(0.9, dir, { ...stance(next, vk), ...punch(next, vk) }, "punch", true);
         blockArm = next;
       }
-      add(1.0, "front", { ...readyLegs, ...ARMS_READY }, "ready");
+      add(1.0, "front", READY, "ready");
     }
-    add(1.6, "front", { ...readyLegs, ...ARMS_READY }, "ready");
+    add(1.6, "front", READY, "ready");
     return { keys: K, total: t };
   }
   const PATTERN = buildPattern();
 
-  // ---------- Test moves (front view) ----------
+  // ---------- Loops (front view) ----------
   const wave = (t) => Math.sin(2 * Math.PI * t);
   const cyc = (t) => (1 - Math.cos(2 * Math.PI * t)) / 2;
   const LOOPS = {
     stehen: {
       name: "Stehen", period: 3.2,
-      pose: (t) => ({ head: 3 * wave(t), torso: 0.8 * wave(t + 0.25), shL: 8 + 3 * wave(t), shR: 8 + 3 * wave(t + 0.5) }),
+      pose: (t) => ({ head: 3 * wave(t), torso: 0.8 * wave(t + 0.25), shL: 6 + 3 * wave(t), shR: 6 + 3 * wave(t + 0.5) }),
     },
     hampelmann: {
       name: "Hampelmann", period: 1.0,
       pose: (t) => {
         const s = cyc(t);
-        return {
-          shL: 8 + 150 * s, shR: 8 + 150 * s, elL: -6 + 10 * s, elR: -6 + 10 * s,
-          hipL: 3 + 17 * s, hipR: 3 + 17 * s, knL: -3 - 6 * s, knR: -3 - 6 * s,
-          air: 26 * Math.abs(Math.sin(2 * Math.PI * t)),
-        };
-      },
-    },
-    kniebeuge: {
-      name: "Kniebeuge", period: 2.2,
-      pose: (t) => {
-        const s = cyc(t);
-        return {
-          hipL: 3 + 38 * s, hipR: 3 + 38 * s, knL: -3 - 36 * s, knR: -3 - 36 * s,
-          thL: 1 - 0.45 * s, thR: 1 - 0.45 * s, shL: 8 - 16 * s, shR: 8 - 16 * s,
-          uaL: 1 - 0.55 * s, uaR: 1 - 0.55 * s, elL: -6 - 20 * s, elR: -6 - 20 * s,
-        };
+        return { shL: 6 + 150 * s, shR: 6 + 150 * s, hipL: 3 + 15 * s, hipR: 3 + 15 * s, air: 50 * Math.abs(Math.sin(2 * Math.PI * t)) };
       },
     },
   };
@@ -634,45 +482,40 @@
     for (const key in a) o[key] = key.startsWith("hide") ? (k < 0.5 ? a[key] : b[key]) : a[key] + (b[key] - a[key]) * k;
     return o;
   };
-
   function patternFrame(T) {
     const K = PATTERN.keys;
     let i = 0;
     while (i + 1 < K.length && K[i + 1].t <= T) i++;
     const k = K[i], prev = K[Math.max(0, i - 1)];
     const dt = T - k.t;
-    if (prev.view !== k.view && i > 0) {
+    if (i > 0 && prev.view !== k.view) {
       const u = Math.min(1, dt / TURN);
       if (u < 0.5) return { view: prev.view, pose: prev.pose, squash: 1 - 0.85 * (u / 0.5), key: k };
-      const into = { ...k.pose };
-      return { view: k.view, pose: into, squash: 0.15 + 0.85 * ((u - 0.5) / 0.5), key: k };
+      return { view: k.view, pose: k.pose, squash: 0.15 + 0.85 * ((u - 0.5) / 0.5), key: k };
     }
     const u = easeOut(Math.min(1, dt / TWEEN));
     return { view: k.view, pose: lerpPose(prev.pose, k.pose, i === 0 ? 1 : u), squash: 1, key: k };
   }
 
   let mode = "saju";
-  let speed = 1, paused = false, last = null, clock = 0, phase = 0, patT = 0;
-  let currentView = "front";
+  let speed = 1, paused = false, last = null, phase = 0, patT = 0;
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) paused = true;
 
-  const VIEW_EL = { front: RIGS.front, back: RIGS.back, sideL: RIGS.side, sideR: RIGS.side };
+  const VIEW_RIG = { front: RIGS.front, back: RIGS.back, sideL: RIGS.side, sideR: RIGS.side };
   function showView(v, squash) {
-    currentView = v;
     RIGS.front.el.toggleAttribute("hidden", v !== "front");
     RIGS.back.el.toggleAttribute("hidden", v !== "back");
     RIGS.side.el.toggleAttribute("hidden", !(v === "sideL" || v === "sideR"));
-    RIGS.side.el.querySelector(".face").setAttribute("transform", v === "sideL" ? "translate(400 0) scale(-1 1)" : "");
-    $("turn").setAttribute("transform", `translate(200 0) scale(${squash} 1) translate(-200 0)`);
+    RIGS.side.el.querySelector(".face").setAttribute("transform", v === "sideL" ? "translate(1040 0) scale(-1 1)" : "");
+    $("turn").setAttribute("transform", `translate(520 0) scale(${squash} 1) translate(-520 0)`);
   }
 
   const capTerm = $("cap-term"), capDe = $("cap-de"), capCount = $("cap-count");
-  const stepsEl = $("steps");
   const stepItems = [];
   PATTERN.keys.filter((k) => k.count).forEach((k) => {
     const li = document.createElement("li");
     li.textContent = TERMS[k.term][1];
-    stepsEl.append(li);
+    $("steps").append(li);
     stepItems.push(li);
   });
   let lastCount = -1, lastTerm = "";
@@ -690,20 +533,17 @@
   }
 
   function render() {
-    const b = clock % 3.6;
-    const blink = b < 0.12 ? Math.sin((b / 0.12) * Math.PI) * 0.9 : 0;
     if (mode === "saju") {
       const f = patternFrame(patT);
       showView(f.view, f.squash);
-      applyRig(VIEW_EL[f.view], { ...f.pose, blink }, "#fist");
+      applyRig(VIEW_RIG[f.view], f.pose);
       setCaption(f.key.term, f.key.count || (f.key.term === "turn" ? lastCount : 0));
     } else {
       showView("front", 1);
-      applyRig(RIGS.front, { ...REST, ...LOOPS[mode].pose(phase), blink }, "#hand");
+      applyRig(RIGS.front, { ...REST, ...LOOPS[mode].pose(phase) });
     }
   }
 
-  // controls
   const movesEl = $("moves");
   const MODES = [["saju", "Saju Jirugi"], ...Object.entries(LOOPS).map(([k, v]) => [k, v.name])];
   for (const [key, name] of MODES) {
@@ -731,14 +571,9 @@
   };
   pauseBtn.addEventListener("click", () => { paused = !paused; syncPause(); });
   syncPause();
-  $("show-bones").addEventListener("change", (e) => {
-    $("bones").toggleAttribute("hidden", !e.target.checked);
-    if (!e.target.checked) $("bones").innerHTML = "";
-    render();
-  });
 
-  // external hook for frame-accurate rendering (video export)
-  window.momoSeek = (seconds) => { paused = true; syncPause(); patT = seconds % PATTERN.total; clock = seconds; render(); };
+  // frame-accurate hook for video export
+  window.momoSeek = (seconds) => { paused = true; syncPause(); mode = "saju"; patT = seconds % PATTERN.total; render(); };
   window.momoPatternLength = PATTERN.total;
 
   function frame(now) {
@@ -746,7 +581,6 @@
     const dt = Math.min(0.05, (now - last) / 1000);
     last = now;
     if (!paused) {
-      clock += dt;
       if (mode === "saju") patT = (patT + dt * speed) % PATTERN.total;
       else phase = (phase + (dt * speed) / LOOPS[mode].period) % 1;
     }
