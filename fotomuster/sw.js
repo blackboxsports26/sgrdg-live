@@ -3,7 +3,7 @@
    Wenn sich die App ändert, hier die Versionsnummer erhöhen.
 */
 
-const CACHE = 'fotomuster-v1';
+const CACHE = 'camagent-v3';
 
 const ASSETS = [
   './',
@@ -11,7 +11,12 @@ const ASSETS = [
   'manifest.webmanifest',
   'icons/icon-192.png',
   'icons/icon-512.png',
-  'icons/icon-maskable-512.png'
+  'icons/icon-maskable-512.png',
+  'icons/apple-touch-icon.png',
+  'fonts/anton-400.woff2',
+  'fonts/ibmplexmono-400.woff2',
+  'fonts/ibmplexmono-500.woff2',
+  'fonts/inter.woff2'
 ];
 
 self.addEventListener('install', (event) => {

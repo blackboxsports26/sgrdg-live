@@ -1,17 +1,23 @@
 # sgrdg-live
 Live-Daten und FUSSBALL.DE-Widgets für die SG RDG App
 
-## Foto-Muster (`/fotomuster/`)
+## CAM AGENT (`/fotomuster/`)
 
-App, die neue Fotos unverändert in Muster für Mo, Di, Mi, Do, Fr, Sa und Event einsetzt.
-Läuft komplett im Browser bzw. als installierte App – es wird nichts hochgeladen.
+App für die Tages-Layouts von Black-Box Sports Academy (Mo, Di, Mi, Do, Fr, Sa und Event):
+Das Layout bleibt bestehen, nur das Foto rechts wird durch ein neues ersetzt – passend
+zugeschnitten und in Schwarz-Weiß. Läuft komplett im Browser bzw. als installierte App,
+es wird nichts hochgeladen.
 
 **Auf dem Android-Handy installieren:** `…/fotomuster/` in Chrome öffnen → Button
 „Installieren“ (oder Chrome-Menü ⋮ → „App installieren“ / „Zum Startbildschirm hinzufügen“).
 Danach startet sie wie eine normale App und funktioniert auch offline.
 
-- Muster (mit Fotobereich) werden einmal hinterlegt und bleiben auf dem Gerät gespeichert.
-- Reihenfolge der neuen Fotos: 1 → Montag … 6 → Samstag, 7 → Event.
-- Fotos werden nicht zugeschnitten, gefiltert oder verzerrt, nur proportional in den Fotobereich eingepasst.
+- Muster (Tages-Layout) einmal hochladen; der Fotobereich wird automatisch erkannt
+  (Textfeld links + Foto rechts, oder durchsichtiges Fenster in einem PNG) und bleibt auf dem Gerät gespeichert.
+- Reihenfolge der neuen Fotos: 1 → Montag … 6 → Samstag, 7 → Event; pro Bild änderbar.
+- Standard: Foto füllt den Fotobereich (zugeschnitten) und ist Schwarz-Weiß.
+  Der Ausschnitt lässt sich pro Foto verschieben. Optional: „Ganz“ (ganzes Foto zeigen) und „Farbe“.
+- Alles außerhalb des Fotobereichs bleibt Pixel für Pixel unverändert.
 - Ausgabe als PNG in der Originalgröße des Musters (einzeln, als ZIP oder per „Teilen“).
 - Bei Änderungen an der App die Versionsnummer in `fotomuster/sw.js` (`CACHE`) erhöhen.
+- Schriften (Anton, Inter, IBM Plex Mono; SIL Open Font License) liegen in `fotomuster/fonts/`.
