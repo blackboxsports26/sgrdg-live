@@ -9,6 +9,14 @@
 
   var OUT = '#141414', FILL = '#ffffff';
 
+  // Farben: 'color' nach der farbigen Momo-Vorlage, 'line' = reiner Strichstil
+  var PAL = {
+    line: { skin: FILL, gi: FILL, giLine: OUT, belt: FILL, rim: FILL, dome: FILL, scute: OUT, rimLine: OUT,
+            cheek: null, tongue: FILL, eye: FILL, staff: FILL },
+    color: { skin: '#95c741', gi: '#2a2a2e', giLine: '#a4a4ad', belt: '#f7f6f7', rim: '#c25d22', dome: '#8fbf47',
+             scute: '#3d6a1c', rimLine: '#6e3614', cheek: '#eea23a', tongue: '#e8707f', eye: FILL, staff: '#e7cc8f' }
+  };
+
   // ---------------------------------------------------------------- Vektoren
   function add(a, b) { return [a[0] + b[0], a[1] + b[1], a[2] + b[2]]; }
   function sub(a, b) { return [a[0] - b[0], a[1] - b[1], a[2] - b[2]]; }
@@ -55,6 +63,7 @@
     var ox = W / 2 + f.rootX * S, oy = gy - f.pelvisH * S;
     var OL = Math.max(3, S * 0.0095);
     var M = d.dims;
+    var pal = PAL[opt.style === 'line' ? 'line' : 'color'];
 
     function P(v) { return [ox + v[0] * S, oy + v[1] * S]; }
 
@@ -72,10 +81,10 @@
     function seg(a, b) { ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.stroke(); }
 
     // Kette aus Segmenten mit Umriss; erst alle schwarz, dann alle weiß -> kein Strich an den Gelenken
-    function tube(pts, ws) {
+    function tube(pts, ws, fill) {
       ctx.strokeStyle = OUT;
       for (var i = 0; i < ws.length; i++) { ctx.lineWidth = ws[i] + 2 * OL; seg(pts[i], pts[i + 1]); }
-      ctx.strokeStyle = FILL;
+      ctx.strokeStyle = fill || FILL;
       for (i = 0; i < ws.length; i++) { ctx.lineWidth = ws[i]; seg(pts[i], pts[i + 1]); }
     }
 
@@ -90,16 +99,16 @@
       ctx.closePath();
     }
 
-    function fillStroke(lw) {
-      ctx.fillStyle = FILL; ctx.fill();
+    function fillStroke(lw, fill) {
+      ctx.fillStyle = fill || FILL; ctx.fill();
       ctx.strokeStyle = OUT; ctx.lineWidth = lw || OL; ctx.stroke();
     }
 
     // Querstrich (z. B. Saum) senkrecht zu einem Segment
-    function cross2(a, b, at, halfLen) {
+    function cross2(a, b, at, halfLen, col) {
       var dx = b[0] - a[0], dy = b[1] - a[1], l = Math.hypot(dx, dy) || 1;
       var px = -dy / l, py = dx / l, cx = lerp(a[0], b[0], at), cy = lerp(a[1], b[1], at);
-      ctx.lineWidth = OL * 0.8; ctx.strokeStyle = OUT;
+      ctx.lineWidth = OL * 0.8; ctx.strokeStyle = col || OUT;
       seg([cx - px * halfLen, cy - py * halfLen], [cx + px * halfLen, cy + py * halfLen]);
     }
 
@@ -124,14 +133,14 @@
       var pts = [], i;
       for (i = 0; i < prof.length; i++) pts.push(edge(prof[i][0], prof[i][1], prof[i][2], -1));
       for (i = prof.length - 1; i >= 0; i--) pts.push(edge(prof[i][0], prof[i][1], prof[i][2], 1));
-      smoothPath(pts, 0.16); fillStroke();
+      smoothPath(pts, 0.16); fillStroke(null, pal.gi);
 
       var facing = clamp((-fw[2] - 0.12) / 0.35, 0, 1);   // 1 = Vorderseite zur Kamera
       var back = clamp((fw[2] - 0.12) / 0.35, 0, 1);
 
       // Revers (über Kreuz) und Kragen
       if (facing > 0) {
-        ctx.globalAlpha = facing; ctx.lineWidth = OL * 0.85; ctx.strokeStyle = OUT;
+        ctx.globalAlpha = facing; ctx.lineWidth = OL * 0.75; ctx.strokeStyle = pal.giLine;
         var B0 = 0.092;
         var cl = P(add(add(mul(up, 0.215), mul(ax, 0.042)), mul(fw, B0 * 0.85)));
         var cr = P(add(add(mul(up, 0.215), mul(ax, -0.042)), mul(fw, B0 * 0.85)));
@@ -144,7 +153,7 @@
       }
       // Rückennaht
       if (back > 0) {
-        ctx.globalAlpha = back * 0.8; ctx.lineWidth = OL * 0.7; ctx.strokeStyle = OUT;
+        ctx.globalAlpha = back * 0.8; ctx.lineWidth = OL * 0.65; ctx.strokeStyle = pal.giLine;
         seg(P(add(mul(up, 0.205), mul(fw, -0.09))), P(add(mul(up, -0.06), mul(fw, -0.084))));
         ctx.globalAlpha = 1;
       }
@@ -154,7 +163,7 @@
       var L0 = edge(bh + 0.022, bA, bB, -1), R0 = edge(bh + 0.022, bA, bB, 1);
       var L1 = edge(bh - 0.022, bA, bB, -1), R1 = edge(bh - 0.022, bA, bB, 1);
       ctx.beginPath(); ctx.moveTo(L0[0], L0[1]); ctx.lineTo(R0[0], R0[1]); ctx.lineTo(R1[0], R1[1]); ctx.lineTo(L1[0], L1[1]); ctx.closePath();
-      fillStroke(OL * 0.9);
+      fillStroke(OL * 0.9, pal.belt);
 
       // Knoten und Gürtelenden (nur von vorn)
       if (facing > 0) {
@@ -169,10 +178,10 @@
           var b1 = [kn[0] + dir[0] * l + nx * w1, kn[1] + dir[1] * l + ny * w1];
           var b2 = [kn[0] + dir[0] * l - nx * w1, kn[1] + dir[1] * l - ny * w1];
           ctx.beginPath(); ctx.moveTo(a1[0], a1[1]); ctx.lineTo(b1[0], b1[1]); ctx.lineTo(b2[0], b2[1]); ctx.lineTo(a2[0], a2[1]); ctx.closePath();
-          fillStroke(OL * 0.85);
+          fillStroke(OL * 0.85, pal.belt);
         }
         ctx.beginPath(); ctx.ellipse(kn[0], kn[1], S * 0.038, S * 0.032, Math.atan2(d2[1], d2[0]), 0, Math.PI * 2);
-        fillStroke(OL * 0.9);
+        fillStroke(OL * 0.9, pal.belt);
         ctx.globalAlpha = 1;
       }
     });
@@ -194,27 +203,37 @@
         var D = layers.map(function (tt) { return disc(tt, 1); }), i;
         ctx.strokeStyle = OUT; ctx.fillStyle = OUT; ctx.lineWidth = OL * 2;
         for (i = 0; i < D.length; i++) { poly(D[i]); ctx.stroke(); ctx.fill(); }
-        ctx.fillStyle = FILL;
-        for (i = 0; i < D.length; i++) { poly(D[i]); ctx.fill(); }
+        // Von hinten liegt die Kuppel oben, von vorn der orange Rand
+        var order = fw[2] > 0 ? [0, 1, 2, 3, 4] : [4, 3, 2, 1, 0];
+        order.forEach(function (k) { ctx.fillStyle = k === 0 ? pal.rim : pal.dome; poly(D[k]); ctx.fill(); });
 
         var vis = clamp((fw[2] - 0.05) / 0.3, 0, 1);       // Rücken zur Kamera: Muster sichtbar
         function ring(tt, sc) { poly(disc(tt, sc)); }
-        ctx.lineWidth = OL * 0.8; ctx.strokeStyle = OUT;
+        function onDisc(tt, sc, lat, upv) {
+          var o = add(cen, mul(back, T * tt));
+          return P(add(add(o, mul(ax, rx * sc * (1 - 0.30 * tt * tt) * lat)), mul(up, ry * sc * (1 - 0.30 * tt * tt) * upv)));
+        }
+        // Randfelder des orangen Rands
+        ctx.lineWidth = OL * 0.6; ctx.strokeStyle = pal.rimLine; ctx.globalAlpha = fw[2] > 0 ? Math.max(vis, 0.6) : 0.85;
+        for (i = 0; i < 18; i++) {
+          var q = i / 18 * Math.PI * 2 + 0.17, ca = Math.cos(q), sa = Math.sin(q);
+          seg(onDisc(0, 0.86, ca, sa), onDisc(0, 1.0, ca, sa));
+        }
+        ring(0, 0.86); ctx.stroke();
+        ctx.globalAlpha = 1;
         if (vis > 0) {
-          ctx.globalAlpha = vis;
+          ctx.globalAlpha = vis; ctx.lineWidth = OL * 0.7; ctx.strokeStyle = pal.scute;
           ring(1, 0.80); ctx.stroke();
-          var mid = add(cen, mul(back, T * (1 - 0.30)));
-          function lp(lat, upv) { return P(add(add(mid, mul(ax, rx * 0.8 * lat)), mul(up, ry * 0.8 * upv))); }
-          // Trennlinie zwischen oberem und unterem Feld (leicht gewölbt), bleibt innerhalb des Innenrings
-          var dv = [];
-          for (var i2 = 0; i2 <= 20; i2++) {
-            var xx = -0.96 + 1.92 * i2 / 20;
-            dv.push(lp(xx, -0.22 - 0.05 * xx * xx));
-          }
-          ctx.beginPath(); ctx.moveTo(dv[0][0], dv[0][1]); for (i2 = 1; i2 < dv.length; i2++) ctx.lineTo(dv[i2][0], dv[i2][1]); ctx.stroke();
+          var hx = [], k2;
+          for (k2 = 0; k2 < 6; k2++) { var an = k2 / 6 * Math.PI * 2; hx.push([Math.cos(an) * 0.40, Math.sin(an) * 0.46]); }
+          ctx.beginPath();
+          hx.forEach(function (h, n) { var p = onDisc(1, 0.80, h[0], h[1]); n ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1]); });
+          ctx.closePath(); ctx.stroke();
+          hx.forEach(function (h) {
+            var n = Math.hypot(h[0] / 0.40, h[1] / 0.46);
+            seg(onDisc(1, 0.80, h[0], h[1]), onDisc(1, 0.80, h[0] / 0.40 * 0.98, h[1] / 0.46 * 0.98));
+          });
           ctx.globalAlpha = 1;
-        } else {
-          ring(0, 0.84); ctx.globalAlpha = 0.9; ctx.stroke(); ctx.globalAlpha = 1;
         }
       });
     })();
@@ -222,7 +241,7 @@
     // ------------------------------------------------ Kopf
     part(f.Hd[2] - 0.03, function () {
       var c = P(f.Hd), R = M.head_r * S;
-      ctx.beginPath(); ctx.arc(c[0], c[1], R, 0, Math.PI * 2); fillStroke(OL * 1.05);
+      ctx.beginPath(); ctx.arc(c[0], c[1], R, 0, Math.PI * 2); fillStroke(OL * 1.05, pal.skin);
 
       var hf = norm(f.hf), ha = norm(f.ha), hu = norm(f.hu);
       // Merkmal auf der Kugeloberfläche: lokale Zeichnung in Kopfradien, korrekt perspektivisch verkürzt
@@ -230,13 +249,13 @@
         var fwd = Math.sqrt(Math.max(0.0001, 1 - lat * lat - upv * upv));
         var o = norm(add(add(mul(ha, lat), mul(hu, upv)), mul(hf, fwd)));
         var nz = -o[2];
-        if (nz < 0.10) return;
+        if (nz < 0.14) return;
         var e1 = sub(ha, mul(o, dot(ha, o))), e2 = sub(hu, mul(o, dot(hu, o)));
         var rr = 1 + (protrude || 0);
         ctx.save();
         ctx.transform(e1[0] * R, e1[1] * R, -e2[0] * R, -e2[1] * R, c[0] + o[0] * R * rr, c[1] + o[1] * R * rr);
         ctx.lineWidth = OL / R * 0.85;
-        fn(clamp((nz - 0.1) / 0.3, 0, 1));
+        fn(1);   // ganz oder gar nicht: halbtransparente Augen am Kopfrand sehen wie Glas aus
         ctx.restore();
       }
       function ell(x, y, rx, ry) { ctx.beginPath(); ctx.ellipse(x, y, rx, ry, 0, 0, Math.PI * 2); }
@@ -244,15 +263,16 @@
       // Wangen (Rötel-Striche)
       [-1, 1].forEach(function (s) {
         onSphere(s * 0.74, -0.32, 0, function (al) {
-          ctx.globalAlpha = al; ctx.strokeStyle = OUT; ctx.lineWidth = OL / R * 0.6;
-          ctx.beginPath(); ctx.ellipse(0, 0, 0.12, 0.065, 0, 0, Math.PI * 2); ctx.stroke(); ctx.globalAlpha = 1;
+          ctx.globalAlpha = al; ctx.beginPath(); ctx.ellipse(0, 0, 0.12, 0.068, 0, 0, Math.PI * 2);
+          if (pal.cheek) { ctx.fillStyle = pal.cheek; ctx.fill(); } else { ctx.strokeStyle = OUT; ctx.lineWidth = OL / R * 0.6; ctx.stroke(); }
+          ctx.globalAlpha = 1;
         });
       });
       // Augen: groß, mit Lichtpunkten
       [-1, 1].forEach(function (s) {
         onSphere(s * 0.43, 0.04, 0, function (al) {
           ctx.globalAlpha = al;
-          ell(0, 0, 0.25, 0.28); ctx.fillStyle = FILL; ctx.fill(); ctx.strokeStyle = OUT; ctx.stroke();
+          ell(0, 0, 0.25, 0.28); ctx.fillStyle = pal.eye; ctx.fill(); ctx.strokeStyle = OUT; ctx.stroke();
           ell(0.008, 0.012, 0.19, 0.225); ctx.fillStyle = OUT; ctx.fill();
           ell(-0.055, -0.08, 0.065, 0.072); ctx.fillStyle = FILL; ctx.fill();
           ell(0.06, 0.08, 0.03, 0.034); ctx.fill();
@@ -262,7 +282,7 @@
       // Schnauze mit Nasenlöchern (an der Seite ragt sie leicht über den Kopfrand)
       onSphere(0, -0.14, 0.025, function (al) {
         ctx.globalAlpha = al;
-        ell(0, 0, 0.17, 0.105); ctx.fillStyle = FILL; ctx.fill(); ctx.strokeStyle = OUT; ctx.stroke();
+        ell(0, 0, 0.17, 0.105); ctx.fillStyle = pal.skin; ctx.fill(); ctx.strokeStyle = OUT; ctx.stroke();
         ctx.fillStyle = OUT; ell(-0.05, -0.005, 0.02, 0.014); ctx.fill(); ell(0.05, -0.005, 0.02, 0.014); ctx.fill();
         ctx.globalAlpha = 1;
       });
@@ -272,38 +292,62 @@
         ctx.beginPath(); ctx.moveTo(-0.32, -0.07); ctx.quadraticCurveTo(0, 0.06, 0.32, -0.07);
         ctx.quadraticCurveTo(0.24, 0.36, 0, 0.38); ctx.quadraticCurveTo(-0.24, 0.36, -0.32, -0.07); ctx.closePath();
         ctx.fillStyle = OUT; ctx.fill(); ctx.strokeStyle = OUT; ctx.stroke();
-        ctx.beginPath(); ctx.ellipse(0, 0.29, 0.15, 0.09, 0, Math.PI, 0, true); ctx.fillStyle = FILL; ctx.fill();
+        ctx.beginPath(); ctx.ellipse(0, 0.29, 0.15, 0.09, 0, Math.PI, 0, true); ctx.fillStyle = pal.tongue; ctx.fill();
         ctx.globalAlpha = 1;
       });
     });
 
     // ------------------------------------------------ Arme (Ärmel + Faust)
-    function arm(sh, el, wr, sideKey) {
+    // Faust: geschlossen, vier eingerollte Finger am Ende, Daumen quer darüber. Immer zu, nie offen.
+    function fist(fc, dirx, diry, side) {
+      var ux = dirx, uy = diry, px = -uy * side, py = ux * side;     // u = Richtung des Unterarms, p = quer dazu
+      function at(u, p) { return [fc[0] + ux * u * S + px * p * S, fc[1] + uy * u * S + py * p * S]; }
+      function blob(u, p, r) { var c = at(u, p); ctx.beginPath(); ctx.arc(c[0], c[1], r * S, 0, Math.PI * 2); }
+      var lw = OL * 0.95;
+      // Umriss: Handrücken plus vier Fingerglieder (Kontur zuerst, Füllung danach -> eine Silhouette)
+      var FP = [-0.030, -0.010, 0.010, 0.030];
+      ctx.fillStyle = OUT; ctx.strokeStyle = OUT; ctx.lineWidth = 2 * OL * 0.95;
+      blob(-0.004, 0, 0.052); ctx.stroke(); ctx.fill();
+      FP.forEach(function (p) { blob(0.032, p, 0.0195); ctx.stroke(); ctx.fill(); });
+      ctx.fillStyle = pal.skin;
+      blob(-0.004, 0, 0.052); ctx.fill();
+      FP.forEach(function (p) { blob(0.032, p, 0.0195); ctx.fill(); });
+      // Trennlinien zwischen den Fingern und die Falte, in der die Finger einrollen
+      ctx.strokeStyle = OUT; ctx.lineWidth = OL * 0.6;
+      for (var k = 0; k < 3; k++) { var m = (FP[k] + FP[k + 1]) / 2; seg(at(0.020, m), at(0.046, m)); }
+      ctx.beginPath(); var c0 = at(0.018, FP[0] - 0.016); ctx.moveTo(c0[0], c0[1]);
+      var c1 = at(0.012, 0), c2 = at(0.018, FP[3] + 0.016); ctx.quadraticCurveTo(c1[0], c1[1], c2[0], c2[1]); ctx.stroke();
+      // Daumen: liegt quer über den Fingern
+      var th = at(0.006, -0.024);
+      ctx.save(); ctx.translate(th[0], th[1]); ctx.rotate(Math.atan2(py, px));
+      ctx.beginPath(); ctx.ellipse(0, 0, 0.030 * S, 0.0185 * S, 0, 0, Math.PI * 2);
+      ctx.fillStyle = pal.skin; ctx.fill(); ctx.strokeStyle = OUT; ctx.lineWidth = OL * 0.8; ctx.stroke();
+      ctx.restore();
+    }
+
+    function arm(sh, el, wr, side) {
       var z = (el[2] + wr[2]) / 2;
       var s0 = P(sh), s1 = P(el), s2 = P(wr);
       part(z, function () {
-        tube([s0, s1, s2], [S * 0.092, S * 0.082]);
-        cross2(s1, s2, 0.80, S * 0.040);
+        tube([s0, s1, s2], [S * 0.092, S * 0.082], pal.gi);
+        cross2(s1, s2, 0.80, S * 0.040, pal.giLine);
       });
-      var dir = norm(sub(wr, el)), fc = P(add(wr, mul(dir, 0.034)));
+      var dir = norm(sub(wr, el)), fc = P(add(wr, mul(dir, 0.030)));
       part(Math.min(z, wr[2]) - 0.01, function () {
-        ctx.beginPath(); ctx.arc(fc[0], fc[1], S * 0.054, 0, Math.PI * 2); fillStroke(OL * 0.95);
-        var dd = sub(s2, s1), l = Math.hypot(dd[0], dd[1]) || 1, ux = dd[0] / l, uy = dd[1] / l, px = -uy, py = ux;
-        ctx.lineWidth = OL * 0.7; ctx.strokeStyle = OUT;       // Finger
-        for (var k = -1; k <= 1; k++) {
-          var bx = fc[0] + ux * S * 0.030 + px * k * S * 0.020, by = fc[1] + uy * S * 0.030 + py * k * S * 0.020;
-          seg([bx, by], [bx + ux * S * 0.014, by + uy * S * 0.014]);
-        }
+        var dd = [s2[0] - s1[0], s2[1] - s1[1]], l = Math.hypot(dd[0], dd[1]);
+        // zeigt der Unterarm zur Kamera, bleibt die letzte sinnvolle Richtung: nach außen zum Körperrand
+        var ux = l > S * 0.02 ? dd[0] / l : 0, uy = l > S * 0.02 ? dd[1] / l : -1;
+        fist(fc, ux, uy, side);
       });
     }
-    arm(f.Ls, f.Le, f.Lw); arm(f.Rs, f.Re, f.Rw);
+    arm(f.Ls, f.Le, f.Lw, 1); arm(f.Rs, f.Re, f.Rw, -1);
 
     // ------------------------------------------------ Beine (Hose + Fuß)
     function leg(hp, kn, an, heel, toe) {
       var z = (kn[2] + an[2]) / 2 + 0.06;
       var h0 = P(hp), k0 = P(kn), a0 = P(an), he = P(heel), to = P(toe);
       part(z, function () {
-        tube([he, to], [S * 0.078]);
+        tube([he, to], [S * 0.078], pal.skin);
         var dd = sub(to, he), l = Math.hypot(dd[0], dd[1]) || 1, ux = dd[0] / l, uy = dd[1] / l;
         ctx.lineWidth = OL * 0.7; ctx.strokeStyle = OUT;        // Zehen
         for (var k = 0; k < 2; k++) {
@@ -311,8 +355,8 @@
           var cx = lerp(he[0], to[0], 0.78) + px * (k ? 1 : -1) * S * 0.010, cy = lerp(he[1], to[1], 0.78) + py * (k ? 1 : -1) * S * 0.010;
           seg([cx + ux * S * 0.004, cy + uy * S * 0.004], [cx + ux * S * 0.044, cy + uy * S * 0.044]);
         }
-        tube([h0, k0, a0], [S * 0.128, S * 0.112]);
-        cross2(k0, a0, 0.80, S * 0.052);
+        tube([h0, k0, a0], [S * 0.128, S * 0.112], pal.gi);
+        cross2(k0, a0, 0.80, S * 0.052, pal.giLine);
       });
     }
     leg(f.Lh, f.Lk, f.La, f.Lhl, f.Lt); leg(f.Rh, f.Rk, f.Ra, f.Rhl, f.Rt);
@@ -332,7 +376,7 @@
         ctx.fillStyle = 'rgba(20,20,20,' + (0.05 + 0.02 * (trail - k)).toFixed(3) + ')';
         ctx.beginPath(); ctx.moveTo(A0[0], A0[1]); ctx.lineTo(A1[0], A1[1]); ctx.lineTo(B1[0], B1[1]); ctx.lineTo(B0[0], B0[1]); ctx.closePath(); ctx.fill();
       }
-      tube([s0, s1], [S * 0.024]);
+      tube([s0, s1], [S * 0.024], pal.staff);
       var dx = s1[0] - s0[0], dy = s1[1] - s0[1], l = Math.hypot(dx, dy) || 1, ux = dx / l, uy = dy / l;
       ctx.strokeStyle = OUT; ctx.lineWidth = S * 0.024;
       seg(s0, [s0[0] + ux * S * 0.05, s0[1] + uy * S * 0.05]);

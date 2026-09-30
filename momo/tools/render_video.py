@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Rendert Momos Bewegung (index.html + motion.json) Bild für Bild mit Chromium zu MP4 und GIF.
 
-Aufruf:  python render_video.py [--out ../momo-form.mp4] [--gif ../momo-form.gif] [--size 1080]
+Aufruf:  python render_video.py [--out ../momo-form.mp4] [--gif ../momo-form.gif] [--size 1080] [--style color|line]
          python render_video.py --stills 0.3 4.3 8.3 --stills-out sheet.png   (nur Stichproben)
 Benötigt: playwright (pip), ffmpeg, Chromium (PLAYWRIGHT_BROWSERS_PATH oder --chromium).
 """
@@ -15,6 +15,7 @@ ap = argparse.ArgumentParser()
 ap.add_argument("--out", default=os.path.join(root, "momo-form.mp4"))
 ap.add_argument("--gif", default=None)
 ap.add_argument("--size", type=int, default=1080)
+ap.add_argument("--style", choices=["color", "line"], default="color")
 ap.add_argument("--chromium", default=None)
 ap.add_argument("--stills", type=float, nargs="*")
 ap.add_argument("--stills-out", default="stills.png")
@@ -24,7 +25,7 @@ Handler = functools.partial(http.server.SimpleHTTPRequestHandler, directory=root
 Handler.log_message = lambda *args, **kw: None
 srv = http.server.ThreadingHTTPServer(("127.0.0.1", 0), Handler)
 threading.Thread(target=srv.serve_forever, daemon=True).start()
-url = f"http://127.0.0.1:{srv.server_address[1]}/index.html?still"
+url = f"http://127.0.0.1:{srv.server_address[1]}/index.html?still&style={a.style}"
 
 fps = json.load(open(os.path.join(root, "motion.json")))["fps"]
 n_frames = len(json.load(open(os.path.join(root, "motion.json")))["frames"])

@@ -48,10 +48,11 @@
   var seek = document.getElementById('seek'), playBtn = document.getElementById('play');
   var timeEl = document.getElementById('time'), speedEl = document.getElementById('speed');
   var data = null, t = 0, playing = true, last = 0;
+  var style = /[?&]style=line/.test(location.search) ? 'line' : 'color';   // ?style=line = Strichstil
 
   function render(time) {
     ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, cv.width, cv.height);
-    Momo.draw(ctx, data, time, { width: cv.width, height: cv.height });
+    Momo.draw(ctx, data, time, { width: cv.width, height: cv.height, style: style });
   }
   // für den Video-Export (tools/render_video.py): ein Bild zu einer Zeit zeichnen
   window.renderAt = function (time) { render(time); };

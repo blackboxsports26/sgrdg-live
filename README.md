@@ -26,13 +26,15 @@ Danach startet sie wie eine normale App und funktioniert auch offline.
 
 ## Momo läuft die Form (`/momo/`)
 
-Momo (Schildkröte im Strichstil) läuft die Form (CFW, Form mit Waffe) von Max. Die Bewegung stammt aus einem
+Momo (Schildkröte, Farben nach der farbigen Momo-Vorlage) läuft die Form (CFW, Form mit Waffe) von Max. Die Hände sind
+von Anfang bis Ende zur Faust geschlossen. Die Bewegung stammt aus einem
 Video; im Endergebnis ist nur Momo zu sehen, kein Bildmaterial aus dem Video.
 
 - `momo/index.html` – Player (Abspielen, Zeitleiste, Tempo), läuft im Browser aus `motion.json`.
 - `momo/momo-form.mp4` (1080×1080, 29,97 fps, ohne Ton) und `momo/momo-form.gif` – fertige Ausgabe.
 - `momo/momo.js` – Momo als Figur aus Einzelteilen (Kopf, Gi, Gürtel, Arme, Beine, Panzer, Stab); dreht sich
   von vorn über die Seite zum Rücken.
+  Der Strichstil (schwarz-weiß) bleibt als Option: `index.html?style=line` bzw. `render_video.py --style line`.
 - `momo/motion.json` – die übertragene Bewegung (Momos Proportionen, 3D-Gelenke pro Bild).
 
 So entsteht es (in `momo/tools/`, Python mit `mediapipe`, `opencv-python-headless`, `scipy`, `playwright`, `ffmpeg`):
