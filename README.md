@@ -49,3 +49,23 @@ So entsteht es (in `momo/tools/`, Python mit `mediapipe`, `opencv-python-headles
 Der Stab steckt nicht in der Pose. `staff_keys.json` wurde deshalb von Hand aus dem Video abgelesen (alle 0,25 s:
 welche Hand hält ihn, wie liegt er in der Bildebene) und wird dazwischen interpoliert. Er ist daher ungenauer als
 der Körper, besonders bei schnellen Wirbeln.
+
+### Momo mit Fäusten (`/momo/faust/`)
+
+`momo/faust/momo-faust.mp4` ist das farbige Momo-Video (1920×1088, 30 fps, mit Originalton), in dem von Anfang bis
+Ende beide Hände zur Faust geballt sind. Der Rest des Videos ist unverändert.
+
+- `detect_hands.py` findet in jedem Bild die Hände (grüne Hautflächen ohne Kopf, Füße und Panzer).
+- `make_fists.py` entfernt die alte Hand (Füllung mit den Nachbarfarben) und zeichnet an ihre Stelle eine Faust im
+  Stil der Vorlage (vier eingerollte Finger, Daumen quer darüber). Positionen und Richtung werden über die Zeit geglättet.
+- `manual.json`: Faustpositionen, die von Hand aus dem Video abgelesen wurden, wo sich Hände per Farbe nicht finden
+  lassen (Hand auf dem Gesicht bei ca. 11,6–12,3 s, verzerrte Bilder bei ca. 13,5–13,8 s).
+
+```
+MOMO_SRC=momo-original.mp4 python detect_hands.py
+MOMO_SRC=momo-original.mp4 python make_fists.py video momo-faust.mp4
+```
+
+Grenzen: Das Ausgangsvideo hat einzelne verzerrte Bilder (z. B. bei 12,25 s). Dort sind die Fäuste frei eingesetzt und
+der Hintergrund darum herum bleibt leicht unsauber. Hände, die im Video hinter dem Körper verschwinden (Rückenansicht),
+bleiben verdeckt.
