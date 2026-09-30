@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#ffffff">
+  <title>Momo läuft die Form</title>
+  <link rel="icon" href="data:,">
+  <style>
+    :root{ --ink:#141414; --mute:#6b6b6b; --line:#e4e4e4; }
+    *{ box-sizing:border-box; }
+    html,body{ margin:0; background:#fff; color:var(--ink); font-family:Inter,Arial,Helvetica,sans-serif; }
+    main{ max-width:720px; margin:0 auto; padding:16px; }
+    h1{ font-size:20px; margin:4px 0 2px; }
+    p.sub{ margin:0 0 12px; color:var(--mute); font-size:13px; }
+    .stage{ width:100%; aspect-ratio:1/1; border:1px solid var(--line); border-radius:12px; overflow:hidden; background:#fff; }
+    canvas{ width:100%; height:100%; display:block; }
+    .bar{ display:flex; align-items:center; gap:10px; margin-top:12px; }
+    button{ font:inherit; font-size:14px; padding:8px 14px; border:1px solid var(--ink); border-radius:999px; background:#fff; color:var(--ink); cursor:pointer; }
+    button:active{ background:var(--ink); color:#fff; }
+    input[type=range]{ flex:1; accent-color:var(--ink); }
+    select{ font:inherit; font-size:14px; padding:7px 8px; border:1px solid var(--line); border-radius:8px; background:#fff; }
+    .time{ font-variant-numeric:tabular-nums; font-size:13px; color:var(--mute); min-width:70px; text-align:right; }
+    .dl{ margin-top:12px; font-size:14px; }
+    .dl a{ color:var(--ink); }
+  </style>
+</head>
+<body>
+<main>
+  <h1>Momo läuft die Form</h1>
+  <p class="sub">Maxens Form (CFW, Form mit Waffe) – Bewegung für Bewegung auf Momo übertragen.</p>
+  <div class="stage"><canvas id="c" width="1080" height="1080"></canvas></div>
+  <div class="bar">
+    <button id="play" type="button">Pause</button>
+    <input id="seek" type="range" min="0" max="1000" value="0" aria-label="Zeitpunkt">
+    <span class="time" id="time">0,0 s</span>
+    <select id="speed" aria-label="Tempo">
+      <option value="0.25">0,25×</option>
+      <option value="0.5">0,5×</option>
+      <option value="1" selected>1×</option>
+    </select>
+  </div>
+  <p class="dl"><a href="momo-form.mp4">Video (MP4) herunterladen</a> · <a href="momo-form.gif">GIF</a></p>
+</main>
+<script src="momo.js"></script>
+<script>
+  var cv = document.getElementById('c'), ctx = cv.getContext('2d');
+  var seek = document.getElementById('seek'), playBtn = document.getElementById('play');
+  var timeEl = document.getElementById('time'), speedEl = document.getElementById('speed');
+  var data = null, t = 0, playing = true, last = 0;
+
+  function render(time) {
+    ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, cv.width, cv.height);
+    Momo.draw(ctx, data, time, { width: cv.width, height: cv.height });
+  }
+  // für den Video-Export (tools/render_video.py): ein Bild zu einer Zeit zeichnen
+  window.renderAt = function (time) { render(time); };
+
+  function dur() { return (data.frames.length - 1) / data.fps; }
+
+  function tick(now) {
+    if (playing) {
+      t += (now - last) / 1000 * parseFloat(speedEl.value);
+      if (t > dur()) t = 0;
+    }
+    last = now;
+    render(t);
+    seek.value = Math.round(t / dur() * 1000);
+    timeEl.textContent = t.toFixed(1).replace('.', ',') + ' s';
+    requestAnimationFrame(tick);
+  }
+
+  playBtn.addEventListener('click', function () { playing = !playing; playBtn.textContent = playing ? 'Pause' : 'Abspielen'; });
+  seek.addEventListener('input', function () { t = seek.value / 1000 * dur(); });
+
+  Momo.load('motion.json').then(function (d) {
+    data = d; window.momoReady = true;
+    if (!/[?&]still/.test(location.search)) requestAnimationFrame(function (n) { last = n; tick(n); });
+  });
+</script>
+</body>
+</html>

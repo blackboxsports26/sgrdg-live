@@ -23,3 +23,27 @@ Danach startet sie wie eine normale App und funktioniert auch offline.
 - Ausgabe als PNG in der Originalgröße des Musters (einzeln, als ZIP oder per „Teilen“).
 - Bei Änderungen an der App die Versionsnummer in `fotomuster/sw.js` (`CACHE`) erhöhen.
 - Schriften (Anton, Inter, IBM Plex Mono; SIL Open Font License) liegen in `fotomuster/fonts/`.
+
+## Momo läuft die Form (`/momo/`)
+
+Momo (Schildkröte im Strichstil) läuft die Form (CFW, Form mit Waffe) von Max. Die Bewegung stammt aus einem
+Video; im Endergebnis ist nur Momo zu sehen, kein Bildmaterial aus dem Video.
+
+- `momo/index.html` – Player (Abspielen, Zeitleiste, Tempo), läuft im Browser aus `motion.json`.
+- `momo/momo-form.mp4` (1080×1080, 29,97 fps, ohne Ton) und `momo/momo-form.gif` – fertige Ausgabe.
+- `momo/momo.js` – Momo als Figur aus Einzelteilen (Kopf, Gi, Gürtel, Arme, Beine, Panzer, Stab); dreht sich
+  von vorn über die Seite zum Rücken.
+- `momo/motion.json` – die übertragene Bewegung (Momos Proportionen, 3D-Gelenke pro Bild).
+
+So entsteht es (in `momo/tools/`, Python mit `mediapipe`, `opencv-python-headless`, `scipy`, `playwright`, `ffmpeg`):
+
+1. `extract_pose.py VIDEO.mp4 pose_raw.json` liest mit MediaPipe (Pose Landmarker „heavy“, Modelldatei
+   `pose_heavy.task` neben das Skript legen) die Körperpose. Die Ergebnisse dieses Videos liegen als
+   `pose_raw.json.gz` im Ordner.
+2. `make_motion.py pose_raw.json.gz ../motion.json --staff staff_keys.json` überträgt die Knochenrichtungen auf
+   Momos Proportionen (Arme mit den Winkeln aus dem Bild, Beine und Rumpf aus der 3D-Schätzung).
+3. `render_video.py --gif ../momo-form.gif` rendert `index.html` Bild für Bild mit Chromium zu MP4 und GIF.
+
+Der Stab steckt nicht in der Pose. `staff_keys.json` wurde deshalb von Hand aus dem Video abgelesen (alle 0,25 s:
+welche Hand hält ihn, wie liegt er in der Bildebene) und wird dazwischen interpoliert. Er ist daher ungenauer als
+der Körper, besonders bei schnellen Wirbeln.
