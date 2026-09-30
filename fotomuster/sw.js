@@ -3,7 +3,7 @@
    Wenn sich die App ändert, hier die Versionsnummer erhöhen.
 */
 
-const CACHE = 'camagent-v3';
+const CACHE = 'camagent-v4';
 
 const ASSETS = [
   './',

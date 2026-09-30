@@ -18,6 +18,8 @@ Danach startet sie wie eine normale App und funktioniert auch offline.
 - Standard: Foto füllt den Fotobereich (zugeschnitten) und ist Schwarz-Weiß.
   Der Ausschnitt lässt sich pro Foto verschieben. Optional: „Ganz“ (ganzes Foto zeigen) und „Farbe“.
 - Alles außerhalb des Fotobereichs bleibt Pixel für Pixel unverändert.
+- Der weiße Rand des Musters bleibt rundherum erhalten, auch um das neue Foto. Ragt ein Fotobereich
+  in den Rand hinein, wird er automatisch verkleinert (auch bei älteren gespeicherten Mustern).
 - Ausgabe als PNG in der Originalgröße des Musters (einzeln, als ZIP oder per „Teilen“).
 - Bei Änderungen an der App die Versionsnummer in `fotomuster/sw.js` (`CACHE`) erhöhen.
 - Schriften (Anton, Inter, IBM Plex Mono; SIL Open Font License) liegen in `fotomuster/fonts/`.
