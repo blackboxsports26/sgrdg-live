@@ -1321,10 +1321,12 @@
       detected = win ? 'Durchsichtiges Fenster' : area ? 'Fotobereich' : null;
     }
 
+    if (!over) frame = trimWhiteMargins(dec.img, frame);
+
     if (rt[id]) URL.revokeObjectURL(rt[id].url);
     rt[id] = { url:dec.url, img:dec.img };
 
-    const rec = { id, blob:file, name:file.name, width:W, height:H, frame, fill, over };
+    const rec = { id, blob:file, name:file.name, width:W, height:H, frame, fill, over, v:2 };
     state.templates[id] = rec;
     await persist(() => store.put(rec));
 
@@ -1348,6 +1350,75 @@
 
     updateTplCard(id);
     requestRender(id);
+  }
+
+
+  /* ============================================================
+     Weißen Rand des Musters aussparen
+     ============================================================ */
+
+  // Ragt der Fotobereich in den hellen Rand des Musters hinein (z. B. weil er bis an den
+  // Bildrand gezogen wurde), wird er verkleinert, damit der Rand rundherum erhalten bleibt.
+  function trimWhiteMargins(img, frame){
+    const W = img.naturalWidth;
+    const H = img.naturalHeight;
+    const canvas = document.createElement('canvas');
+    canvas.width = W;
+    canvas.height = H;
+    const ctx = canvas.getContext('2d', { willReadFrequently:true });
+    ctx.drawImage(img, 0, 0);
+    const d = ctx.getImageData(0, 0, W, H).data;
+    const lum = (x, y) => { const i = (y * W + x) * 4; return (d[i] * 54 + d[i + 1] * 183 + d[i + 2] * 19) >> 8; };
+
+    const WHITE = 236;
+    const MIN = 8;
+    const maxX = Math.round(W * 0.03);
+    const maxY = Math.round(H * 0.03);
+
+    const rowMean = (y, xa, xb) => {
+      const step = Math.max(1, Math.floor((xb - xa) / 240));
+      let sum = 0, n = 0;
+      for (let x = xa; x < xb; x += step){ sum += lum(x, y); n++; }
+      return sum / n;
+    };
+    const colMean = (x, ya, yb) => {
+      const step = Math.max(1, Math.floor((yb - ya) / 240));
+      let sum = 0, n = 0;
+      for (let y = ya; y < yb; y += step){ sum += lum(x, y); n++; }
+      return sum / n;
+    };
+
+    let x0 = clamp(frame.x, 0, W - 1);
+    let y0 = clamp(frame.y, 0, H - 1);
+    let x1 = clamp(frame.x + frame.w, x0 + 1, W);
+    let y1 = clamp(frame.y + frame.h, y0 + 1, H);
+
+    let n = 0;
+    while (n < maxY && y1 - y0 > MIN && rowMean(y0, x0, x1) >= WHITE){ y0++; n++; }
+    n = 0;
+    while (n < maxY && y1 - y0 > MIN && rowMean(y1 - 1, x0, x1) >= WHITE){ y1--; n++; }
+    n = 0;
+    while (n < maxX && x1 - x0 > MIN && colMean(x0, y0, y1) >= WHITE){ x0++; n++; }
+    n = 0;
+    while (n < maxX && x1 - x0 > MIN && colMean(x1 - 1, y0, y1) >= WHITE){ x1--; n++; }
+
+    return { x:x0, y:y0, w:x1 - x0, h:y1 - y0 };
+  }
+
+  const sameFrame = (a, b) => a.x === b.x && a.y === b.y && a.w === b.w && a.h === b.h;
+
+  // Einmalige Korrektur für Muster aus älteren Versionen: Liegt der erkannte Fotobereich nur
+  // wenige Pixel neben dem gespeicherten (grob gezogenen) Rahmen, wird er übernommen.
+  function repairFrame(img, frame){
+    let f = frame;
+    const area = detectPhotoArea(img);
+    if (area){
+      const M = 45;
+      const close = Math.abs(area.x - f.x) <= M && Math.abs(area.y - f.y) <= M &&
+        Math.abs((area.x + area.w) - (f.x + f.w)) <= M && Math.abs((area.y + area.h) - (f.y + f.h)) <= M;
+      if (close) f = area;
+    }
+    return trimWhiteMargins(img, f);
   }
 
 
@@ -1725,15 +1796,17 @@
   async function saveEditor(){
     const id = ed.id;
     const tpl = state.templates[id];
-    tpl.frame = { ...ed.cfg.frame };
+    const wanted = { ...ed.cfg.frame };
+    tpl.frame = ed.cfg.over ? wanted : trimWhiteMargins(rt[id].img, wanted);
     tpl.fill = ed.cfg.fill;
     tpl.over = ed.cfg.over;
+    tpl.v = 2;
 
     closeEditor();
     await persist(() => store.put(tpl));
     updateTplCard(id);
     requestRender(id);
-    toast('Fotobereich gespeichert.');
+    toast(sameFrame(wanted, tpl.frame) ? 'Fotobereich gespeichert.' : 'Fotobereich gespeichert – weißer Rand bleibt erhalten.');
   }
 
   E.over.addEventListener('change', () => { ed.cfg.over = E.over.checked; syncEditor(); });
@@ -1978,6 +2051,12 @@
           rec.height = dec.img.naturalHeight;
           rt[rec.id] = { url:dec.url, img:dec.img };
           state.templates[rec.id] = rec;
+
+          if (rec.v !== 2){
+            if (!rec.over) rec.frame = repairFrame(dec.img, rec.frame);
+            rec.v = 2;
+            await persist(() => store.put(rec));
+          }
         } catch (e) { /* defektes Muster überspringen */ }
       }
     } catch (e) {
