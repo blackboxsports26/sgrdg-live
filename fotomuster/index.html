@@ -6,11 +6,11 @@
   <meta name="theme-color" content="#073b82">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-title" content="Foto-Muster">
+  <meta name="apple-mobile-web-app-title" content="CAM AGENT">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
   <link rel="apple-touch-icon" href="icons/icon-192.png">
-  <title>Foto-Muster</title>
+  <title>CAM AGENT</title>
 
   <style>
     :root{
@@ -178,6 +178,15 @@
       pointer-events:none;
     }
 
+    .options{ display:flex; flex-wrap:wrap; gap:10px 20px; align-items:center; margin-bottom:12px; }
+    .opt{ display:flex; align-items:center; gap:8px; font-size:13px; font-weight:700; color:var(--muted); }
+    .seg{ display:inline-flex; overflow:hidden; border:1.5px solid var(--blue); border-radius:9px; }
+    .seg label{ position:relative; display:block; }
+    .seg input{ position:absolute; inset:0; opacity:0; margin:0; cursor:pointer; }
+    .seg span{ display:block; padding:9px 12px; background:#fff; color:var(--blue); font-size:13px; font-weight:700; }
+    .seg input:checked + span{ background:var(--blue); color:#fff; }
+    .seg input:focus-visible + span{ outline:3px solid #7db8f5; outline-offset:-3px; }
+
     select{
       width:100%;
       min-height:38px;
@@ -191,6 +200,7 @@
 
     .slot-actions{ display:flex; flex-wrap:wrap; gap:6px; }
     .slot-actions .btn{ flex:1 1 auto; min-height:38px; padding:6px 8px; font-size:13px; }
+    .slot-actions .btn.wide{ flex-basis:100%; }
 
     /* ---------- Muster verwalten ---------- */
 
@@ -271,6 +281,15 @@
 
     .modal-actions{ display:flex; flex-wrap:wrap; gap:8px; justify-content:flex-end; margin-top:12px; }
 
+    .stage.crop{ overflow:hidden; touch-action:none; cursor:grab; }
+    .stage.crop.gray img{ filter:grayscale(1); }
+    .cwin{
+      position:absolute;
+      border:2px solid #fff;
+      box-shadow:0 0 0 9999px rgba(7,20,40,.62);
+      touch-action:none;
+    }
+
     .install{
       display:flex;
       align-items:center;
@@ -313,8 +332,8 @@
 <main>
 
   <header class="hero">
-    <h1>Foto-Muster</h1>
-    <p>Neue Fotos in deine Muster für Mo – Sa und Event einsetzen – ohne sie zu verändern.</p>
+    <h1>CAM AGENT</h1>
+    <p>Neue Fotos in deine Tages-Layouts für Mo – Sa und Event einsetzen.</p>
   </header>
 
   <div class="tabs" role="tablist">
@@ -350,10 +369,27 @@
       </label>
 
       <p class="hint">
-        Deine Fotos werden nicht verändert: kein Zuschneiden, keine Filter, keine Verzerrung.
-        Sie werden nur in den Fotobereich des Musters gesetzt, das ganze Foto bleibt sichtbar.
+        Das Tages-Layout bleibt bestehen, nur das Foto rechts wird ersetzt: passend zugeschnitten
+        und in Schwarz-Weiß. Den Ausschnitt kannst du pro Foto verschieben.
         Alles passiert auf deinem Gerät – es wird nichts hochgeladen.
       </p>
+    </div>
+
+    <div class="card options" id="options">
+      <div class="opt">
+        Bildgröße
+        <div class="seg" role="radiogroup" aria-label="Bildgröße">
+          <label><input type="radio" name="fit" value="cover"><span>Füllen</span></label>
+          <label><input type="radio" name="fit" value="contain"><span>Ganz zeigen</span></label>
+        </div>
+      </div>
+      <div class="opt">
+        Farbe
+        <div class="seg" role="radiogroup" aria-label="Farbe">
+          <label><input type="radio" name="bw" value="1"><span>Schwarz-Weiß</span></label>
+          <label><input type="radio" name="bw" value="0"><span>Original</span></label>
+        </div>
+      </div>
     </div>
 
     <div class="toolbar" id="toolbar" hidden>
@@ -378,7 +414,8 @@
     <p class="setup-intro">
       Lade für jeden Tag ein Muster hoch (deine Vorlage mit Logo, Text usw.) und lege danach fest,
       wo das Foto sitzen soll. Die Muster bleiben auf diesem Gerät gespeichert.
-      Tipp: Hat dein Muster (PNG) ein durchsichtiges Fenster, erkennt die App den Bereich automatisch.
+      Tipp: Die App erkennt den Fotobereich automatisch (Textfeld links und Foto rechts oder ein
+      durchsichtiges Fenster in einem PNG). Bitte kurz prüfen und bei Bedarf nachziehen.
     </p>
 
     <div id="setupGrid" class="grid"></div>
@@ -401,8 +438,8 @@
     </div>
 
     <p>
-      Ziehe den blauen Rahmen dorthin, wo das neue Foto sitzen soll (Ecken und Kanten ändern die Größe).
-      Das Foto wird in den Rahmen eingepasst, ohne es zuzuschneiden.
+      Der blaue Rahmen zeigt, wo das neue Foto das alte ersetzt. Ziehen verschiebt ihn,
+      Ecken und Kanten ändern die Größe.
     </p>
 
     <div class="stage-wrap" id="edWrap">
@@ -426,23 +463,52 @@
         <label><input id="edOver" type="checkbox"> Muster liegt über dem Foto (für Muster mit durchsichtigem Fenster)</label>
       </div>
       <div class="row">
-        Freie Fläche im Rahmen füllen mit
+        Bei „Ganz zeigen“ freie Fläche füllen mit
         <input id="edFill" type="color" value="#ffffff" aria-label="Füllfarbe">
         <label><input id="edNoFill" type="checkbox"> keine Füllung</label>
       </div>
       <div class="row">
-        <button class="btn" id="edDetect" type="button">Durchsichtiges Fenster erkennen</button>
+        <button class="btn" id="edDetect" type="button">Fotobereich automatisch erkennen</button>
       </div>
     </div>
 
     <div class="preview">
-      <h3>Vorschau mit Beispielfoto (3:2) – so wird ein Foto eingepasst</h3>
+      <h3>Vorschau mit Beispielfoto (Querformat)</h3>
       <canvas id="edPreview"></canvas>
     </div>
 
     <div class="modal-actions">
       <button class="btn" id="edCancel" type="button">Abbrechen</button>
       <button class="btn primary" id="edSave" type="button">Speichern</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===================================== -->
+<!-- AUSSCHNITT VERSCHIEBEN                -->
+<!-- ===================================== -->
+
+<div id="cropper" class="modal" role="dialog" aria-modal="true" aria-labelledby="crTitle" hidden>
+  <div class="modal-box">
+
+    <div class="modal-head">
+      <h2 id="crTitle">Ausschnitt</h2>
+      <button class="btn" id="crClose" type="button" aria-label="Schließen">✕</button>
+    </div>
+
+    <p>Verschiebe das helle Fenster – nur dieser Teil des Fotos kommt ins Muster.</p>
+
+    <div class="stage-wrap" id="crWrap">
+      <div class="stage crop" id="crStage">
+        <img id="crImg" alt="Foto" draggable="false">
+        <div class="cwin" id="crWin"></div>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn" id="crReset" type="button">Zentrieren</button>
+      <button class="btn primary" id="crDone" type="button">Fertig</button>
     </div>
 
   </div>
@@ -485,6 +551,7 @@
   const state = {
     templates: {},   // id -> { id, blob, name, width, height, frame:{x,y,w,h}, fill, over }
     photos: [],      // File[]
+    focus: {},       // Foto-Index -> { x, y } (0..1): Position des Ausschnitts
     assign: {},      // slotId -> Index in photos | null
     results: {},     // slotId -> { blob, url, name }
     cardState: {}    // slotId -> { busy, error }
@@ -493,6 +560,14 @@
   SLOTS.forEach(s => { state.assign[s.id] = null; state.cardState[s.id] = {}; });
 
   let persistent = true;
+
+  // Einstellungen (nur Anzeige-Vorlieben, im Browser gemerkt)
+  const settings = { fit:'cover', bw:true };
+  try {
+    const saved = JSON.parse(localStorage.getItem('camagent.settings') || '{}');
+    if (saved.fit === 'contain') settings.fit = 'contain';
+    if (saved.bw === false) settings.bw = false;
+  } catch (e) { /* nicht verfügbar */ }
 
 
   /* ============================================================
@@ -568,35 +643,69 @@
 
   const srcSize = (src) => [src.naturalWidth || src.width, src.naturalHeight || src.height];
 
+  const photoCanvas = document.createElement('canvas');
+
+  function toGray(ctx, w, h){
+    const img = ctx.getImageData(0, 0, w, h);
+    const d = img.data;
+    for (let i = 0; i < d.length; i += 4){
+      d[i] = d[i + 1] = d[i + 2] = (d[i] * 54 + d[i + 1] * 183 + d[i + 2] * 19) >> 8;   // Rec.709-Helligkeit
+    }
+    ctx.putImageData(img, 0, 0);
+  }
+
   /*
-     Setzt das Foto unverändert in den Fotobereich des Musters:
-     - kein Zuschneiden, keine Filter, keine Verzerrung
-     - das ganze Foto bleibt sichtbar (proportional eingepasst)
-     - Ausgabegröße = Originalgröße des Musters
+     Ersetzt das Foto im Muster; alles außerhalb des Fotobereichs bleibt Pixel für Pixel erhalten.
+     - fit "cover":   Foto füllt den Bereich komplett (zugeschnitten, Ausschnitt über focus 0..1)
+     - fit "contain": ganzes Foto sichtbar (proportional eingepasst, Rest wird gefüllt)
+     - bw:            Foto in Schwarz-Weiß
+     Ausgabegröße = Originalgröße des Musters.
   */
-  function compose(canvas, tplImg, cfg, src){
+  function compose(canvas, tplImg, cfg, src, opts){
+    const fit = (opts && opts.fit) || 'cover';
+    const bw = !opts || opts.bw !== false;
+    const focus = (opts && opts.focus) || { x:.5, y:.5 };
     const { width:W, height:H, frame:f } = cfg;
+
     canvas.width = W;
     canvas.height = H;
-
     const ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, W, H);
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = 'high';
 
     const [pw, ph] = srcSize(src);
-    const scale = Math.min(f.w / pw, f.h / ph);
-    const dw = Math.max(1, Math.round(pw * scale));
-    const dh = Math.max(1, Math.round(ph * scale));
-    const dx = f.x + Math.floor((f.w - dw) / 2);
-    const dy = f.y + Math.floor((f.h - dh) / 2);
+    let sx = 0, sy = 0, sw = pw, sh = ph;
+    let dx = f.x, dy = f.y, dw = f.w, dh = f.h;
+
+    if (fit === 'cover'){
+      const scale = Math.max(f.w / pw, f.h / ph);
+      sw = Math.min(pw, f.w / scale);
+      sh = Math.min(ph, f.h / scale);
+      sx = (pw - sw) * clamp(focus.x, 0, 1);
+      sy = (ph - sh) * clamp(focus.y, 0, 1);
+    } else {
+      const scale = Math.min(f.w / pw, f.h / ph);
+      dw = Math.max(1, Math.round(pw * scale));
+      dh = Math.max(1, Math.round(ph * scale));
+      dx = f.x + Math.floor((f.w - dw) / 2);
+      dy = f.y + Math.floor((f.h - dh) / 2);
+    }
+
+    photoCanvas.width = dw;
+    photoCanvas.height = dh;
+    const pctx = photoCanvas.getContext('2d', { willReadFrequently:true });
+    pctx.imageSmoothingEnabled = true;
+    pctx.imageSmoothingQuality = 'high';
+    pctx.drawImage(src, sx, sy, sw, sh, 0, 0, dw, dh);
+    if (bw) toGray(pctx, dw, dh);
 
     if (!cfg.over) ctx.drawImage(tplImg, 0, 0, W, H);
-    if (cfg.fill){
+    if (fit === 'contain' && cfg.fill){
       ctx.fillStyle = cfg.fill;
       ctx.fillRect(f.x, f.y, f.w, f.h);
     }
-    ctx.drawImage(src, dx, dy, dw, dh);
+    ctx.drawImage(photoCanvas, dx, dy);
     if (cfg.over) ctx.drawImage(tplImg, 0, 0, W, H);
   }
 
@@ -641,7 +750,7 @@
       dec = await decodeFile(file);
       if (token !== renderToken[id]) return;
 
-      compose(work, rt[id].img, tpl, dec.img);
+      compose(work, rt[id].img, tpl, dec.img, { fit:settings.fit, bw:settings.bw, focus:state.focus[state.assign[id]] });
       const blob = await toBlob(work);
       if (!blob) throw new Error('Bild konnte nicht erstellt werden');
       if (token !== renderToken[id]) return;
@@ -675,6 +784,7 @@
     }
 
     state.photos = imgs;
+    state.focus = {};
     SLOTS.forEach((s, i) => { state.assign[s.id] = i < imgs.length ? i : null; });
 
     if (imgs.length > SLOTS.length){
@@ -715,6 +825,7 @@
 
   function clearPhotos(){
     state.photos = [];
+    state.focus = {};
     SLOTS.forEach(s => {
       state.assign[s.id] = null;
       requestRender(s.id);
@@ -745,7 +856,8 @@
         c.file.value = '';
         addPhotoToSlot(s.id, file);
       }});
-      c.dl = h('a', { class:'btn primary', 'aria-disabled':'true' }, 'Download');
+      c.crop = h('button', { class:'btn', type:'button', onclick: () => openCropper(s.id) }, 'Ausschnitt');
+      c.dl = h('a', { class:'btn primary wide', 'aria-disabled':'true' }, 'Download');
 
       c.root = h('article', { class:'card slot' },
         h('div', { class:'slot-head' }, c.title, c.status),
@@ -753,6 +865,7 @@
         c.select,
         h('div', { class:'slot-actions' },
           h('label', { class:'btn' }, 'Foto wählen', c.file),
+          c.crop,
           c.dl
         )
       );
@@ -803,6 +916,9 @@
     );
     c.select.value = idx == null ? '' : String(idx);
     c.select.disabled = !state.photos.length;
+
+    // Ausschnitt verschieben (nur sinnvoll, wenn das Foto den Bereich füllt)
+    c.crop.hidden = !(tpl && idx != null && settings.fit === 'cover');
 
     // Download
     if (res){
@@ -855,13 +971,13 @@
   async function downloadZip(){
     const list = readyResults();
     if (!list.length) return;
-    saveBlob(await makeZip(list), 'Foto-Muster.zip');
+    saveBlob(await makeZip(list), 'CAM-AGENT.zip');
   }
 
   async function shareAll(){
     const files = readyResults().map(r => new File([r.blob], r.name, { type:'image/png' }));
     try {
-      await navigator.share({ files, title:'Foto-Muster' });
+      await navigator.share({ files, title:'CAM AGENT' });
     } catch (e) {
       if (e.name !== 'AbortError') toast('Teilen nicht möglich: ' + e.message);
     }
@@ -1025,7 +1141,7 @@
     const H = dec.img.naturalHeight;
     const old = state.templates[id];
 
-    let frame, over = false, fill = '#ffffff';
+    let frame, over = false, fill = '#ffffff', detected = null;
     if (old && old.width === W && old.height === H){
       // gleiche Größe: bisherige Einstellungen behalten
       frame = old.frame;
@@ -1033,8 +1149,10 @@
       fill = old.fill;
     } else {
       const win = detectWindow(dec.img);
-      frame = win || defaultFrame(W, H);
+      const area = win ? null : detectPhotoArea(dec.img);
+      frame = win || area || defaultFrame(W, H);
       over = !!win;
+      detected = win ? 'Durchsichtiges Fenster' : area ? 'Fotobereich' : null;
     }
 
     if (rt[id]) URL.revokeObjectURL(rt[id].url);
@@ -1048,7 +1166,7 @@
     requestRender(id);
 
     if (!old || old.width !== W || old.height !== H){
-      toast(over ? 'Durchsichtiges Fenster erkannt – bitte kurz prüfen.' : 'Jetzt den Fotobereich festlegen.');
+      toast(detected ? detected + ' erkannt – bitte kurz prüfen.' : 'Jetzt den Fotobereich festlegen.');
       openEditor(id);
     }
   }
@@ -1064,6 +1182,66 @@
 
     updateTplCard(id);
     requestRender(id);
+  }
+
+
+  /* ============================================================
+     Fotobereich erkennen: dunkles Textfeld links, Foto rechts,
+     dazu ein heller Rand (wie bei den Tages-Layouts)
+     ============================================================ */
+
+  function detectPhotoArea(img){
+    const W = img.naturalWidth;
+    const H = img.naturalHeight;
+    const canvas = document.createElement('canvas');
+    canvas.width = W;
+    canvas.height = H;
+    const ctx = canvas.getContext('2d', { willReadFrequently:true });
+    ctx.drawImage(img, 0, 0);
+    const d = ctx.getImageData(0, 0, W, H).data;
+    const lum = (x, y) => { const i = (y * W + x) * 4; return (d[i] * 54 + d[i + 1] * 183 + d[i + 2] * 19) >> 8; };
+
+    // 1. Senkrechte Kante zwischen Textfeld und Foto: die Spalte mit dem größten Helligkeitssprung
+    const yStep = Math.max(1, Math.floor(H / 480));
+    const yMargin = Math.round(H * 0.03);
+    const xMin = Math.round(W * 0.15);
+    const xMax = Math.round(W * 0.75);
+    const score = new Float32Array(W);
+    let best = -1;
+    for (let x = xMin; x <= xMax; x++){
+      let sum = 0, n = 0;
+      for (let y = yMargin; y < H - yMargin; y += yStep){ sum += Math.abs(lum(x, y) - lum(x - 1, y)); n++; }
+      score[x] = sum / n;
+      if (best < 0 || score[x] > score[best]) best = x;
+    }
+    let second = 0;
+    for (let x = xMin; x <= xMax; x++){
+      if (Math.abs(x - best) > 8 && score[x] > second) second = score[x];
+    }
+    if (score[best] < 15 || score[best] < 1.5 * second) return null;
+
+    let left = best;
+    for (let x = best - 3; x < best; x++){
+      if (x > xMin && score[x] >= score[best] * 0.5){ left = x; break; }
+    }
+
+    // 2. Heller Rand rechts, oben, unten (Mittelwert einer Spalte/Zeile über 235)
+    const colMean = (x) => { let s = 0, n = 0; for (let y = Math.round(H * 0.2); y < H * 0.8; y += yStep){ s += lum(x, y); n++; } return s / n; };
+    let right = W - 1;
+    while (right > left + 10 && colMean(right) > 235) right--;
+
+    const xa = left + 10;
+    const xb = Math.max(xa + 1, right - 10);
+    const xStep = Math.max(1, Math.floor((xb - xa) / 200));
+    const rowMean = (y) => { let s = 0, n = 0; for (let x = xa; x < xb; x += xStep){ s += lum(x, y); n++; } return s / n; };
+    let top = 0;
+    while (top < H * 0.08 && rowMean(top) > 235) top++;
+    let bottom = H - 1;
+    while (bottom > H * 0.92 && rowMean(bottom) > 235) bottom--;
+
+    const frame = { x:left, y:top, w:right - left + 1, h:bottom - top + 1 };
+    if (frame.w < W * 0.2 || frame.h < H * 0.5) return null;
+    return frame;
   }
 
 
@@ -1249,7 +1427,7 @@
 
   function refreshPreview(){
     if (!ed.id) return;
-    compose(E.preview, rt[ed.id].img, { width:ed.W, height:ed.H, ...ed.cfg }, getSample());
+    compose(E.preview, rt[ed.id].img, { width:ed.W, height:ed.H, ...ed.cfg }, getSample(), { fit:settings.fit, bw:settings.bw });
   }
 
   // Das gerade geänderte Feld gewinnt; die übrigen passen sich nur an, wenn der Rahmen sonst überstehen würde.
@@ -1318,7 +1496,28 @@
     target.addEventListener('pointercancel', up);
   }
 
-  let editorHistory = false;
+  let modalHistory = false;
+
+  // Android-Zurück-Taste soll nur ein offenes Fenster schließen, nicht die App
+  function pushModalState(){
+    if (!modalHistory){
+      history.pushState({ camAgentModal:true }, '');
+      modalHistory = true;
+    }
+  }
+
+  function popModalState(){
+    if (modalHistory){
+      modalHistory = false;
+      history.back();
+    }
+  }
+
+  window.addEventListener('popstate', () => {
+    modalHistory = false;
+    if (ed.id) hideEditor();
+    if (cr.id) hideCropper();
+  });
 
   function openEditor(id){
     const tpl = state.templates[id];
@@ -1342,12 +1541,7 @@
     E.root.scrollTop = 0;
     fitStage();
     syncEditor();
-
-    // Android-Zurück-Taste soll nur den Editor schließen, nicht die App
-    if (!editorHistory){
-      history.pushState({ fotomusterEditor:true }, '');
-      editorHistory = true;
-    }
+    pushModalState();
   }
 
   function hideEditor(){
@@ -1359,18 +1553,8 @@
   function closeEditor(){
     if (!ed.id) return;
     hideEditor();
-    if (editorHistory){
-      editorHistory = false;
-      history.back();
-    }
+    popModalState();
   }
-
-  window.addEventListener('popstate', () => {
-    if (ed.id){
-      editorHistory = false;
-      hideEditor();
-    }
-  });
 
   async function saveEditor(){
     const id = ed.id;
@@ -1396,23 +1580,134 @@
   [E.x, E.y, E.w, E.h].forEach(input => input.addEventListener('change', () => readFrameInputs(input)));
 
   $('#edDetect').addEventListener('click', () => {
-    const win = detectWindow(rt[ed.id].img);
-    if (!win){
-      toast('Kein durchsichtiges Fenster gefunden – bitte den Rahmen selbst ziehen.');
+    const img = rt[ed.id].img;
+    const win = detectWindow(img);
+    const area = win ? null : detectPhotoArea(img);
+    if (!win && !area){
+      toast('Nichts erkannt – bitte den Rahmen selbst ziehen.');
       return;
     }
-    ed.cfg.frame = win;
-    ed.cfg.over = true;
-    E.over.checked = true;
+    ed.cfg.frame = win || area;
+    ed.cfg.over = !!win;
+    E.over.checked = !!win;
     syncEditor();
-    toast('Durchsichtiges Fenster erkannt.');
+    toast(win ? 'Durchsichtiges Fenster erkannt.' : 'Fotobereich erkannt – bitte kurz prüfen.');
   });
 
   $('#edClose').addEventListener('click', closeEditor);
   $('#edCancel').addEventListener('click', closeEditor);
   $('#edSave').addEventListener('click', saveEditor);
   window.addEventListener('resize', fitStage);
-  document.addEventListener('keydown', e => { if (e.key === 'Escape' && ed.id) closeEditor(); });
+  document.addEventListener('keydown', e => {
+    if (e.key !== 'Escape') return;
+    if (ed.id) closeEditor();
+    else if (cr.id) closeCropper(false);
+  });
+
+
+  /* ============================================================
+     Ausschnitt verschieben
+     ============================================================ */
+
+  const cr = { id:null, idx:null, url:null, pw:0, ph:0, sw:0, sh:0, focus:{ x:.5, y:.5 } };
+  const C = { root: $('#cropper'), wrap: $('#crWrap'), stage: $('#crStage'), img: $('#crImg'), win: $('#crWin') };
+
+  async function openCropper(id){
+    const idx = state.assign[id];
+    const tpl = state.templates[id];
+    if (idx == null || !tpl) return;
+
+    let dec;
+    try {
+      dec = await decodeFile(state.photos[idx]);
+    } catch (e) {
+      toast('Das Foto konnte nicht gelesen werden.');
+      return;
+    }
+
+    const f = tpl.frame;
+    const pw = dec.img.naturalWidth;
+    const ph = dec.img.naturalHeight;
+    const scale = Math.max(f.w / pw, f.h / ph);
+
+    Object.assign(cr, {
+      id, idx, url:dec.url, pw, ph,
+      sw: Math.min(pw, f.w / scale),
+      sh: Math.min(ph, f.h / scale),
+      focus: { ...(state.focus[idx] || { x:.5, y:.5 }) }
+    });
+
+    C.stage.classList.toggle('gray', settings.bw);
+    C.img.src = dec.url;
+    C.root.hidden = false;
+    document.body.classList.add('lock');
+    C.root.scrollTop = 0;
+    fitCropper();
+    syncCropper();
+    pushModalState();
+  }
+
+  function fitCropper(){
+    if (!cr.id) return;
+    const maxH = Math.max(240, window.innerHeight * 0.6);
+    C.stage.style.width = Math.max(120, Math.min(C.wrap.clientWidth, maxH * cr.pw / cr.ph)) + 'px';
+  }
+
+  function syncCropper(){
+    C.win.style.width = cr.sw / cr.pw * 100 + '%';
+    C.win.style.height = cr.sh / cr.ph * 100 + '%';
+    C.win.style.left = (cr.pw - cr.sw) * cr.focus.x / cr.pw * 100 + '%';
+    C.win.style.top = (cr.ph - cr.sh) * cr.focus.y / cr.ph * 100 + '%';
+  }
+
+  C.stage.addEventListener('pointerdown', (e) => {
+    e.preventDefault();
+    C.stage.setPointerCapture(e.pointerId);
+
+    const f0 = { ...cr.focus };
+    const sx = e.clientX;
+    const sy = e.clientY;
+    const k = cr.pw / C.stage.clientWidth;
+
+    const move = (ev) => {
+      const spanX = cr.pw - cr.sw;
+      const spanY = cr.ph - cr.sh;
+      if (spanX > 0.5) cr.focus.x = clamp(f0.x + (ev.clientX - sx) * k / spanX, 0, 1);
+      if (spanY > 0.5) cr.focus.y = clamp(f0.y + (ev.clientY - sy) * k / spanY, 0, 1);
+      syncCropper();
+    };
+    const up = () => {
+      C.stage.removeEventListener('pointermove', move);
+      C.stage.removeEventListener('pointerup', up);
+      C.stage.removeEventListener('pointercancel', up);
+    };
+
+    C.stage.addEventListener('pointermove', move);
+    C.stage.addEventListener('pointerup', up);
+    C.stage.addEventListener('pointercancel', up);
+  });
+
+  function hideCropper(){
+    if (cr.url) URL.revokeObjectURL(cr.url);
+    cr.id = null;
+    cr.url = null;
+    C.root.hidden = true;
+    document.body.classList.remove('lock');
+  }
+
+  function closeCropper(save){
+    if (!cr.id) return;
+    const id = cr.id;
+    if (save) state.focus[cr.idx] = { ...cr.focus };
+    hideCropper();
+    popModalState();
+    if (save) requestRender(id);
+  }
+
+  $('#crDone').addEventListener('click', () => closeCropper(true));
+  $('#crClose').addEventListener('click', () => closeCropper(false));
+  $('#crReset').addEventListener('click', () => { cr.focus = { x:.5, y:.5 }; syncCropper(); });
+  window.addEventListener('resize', fitCropper);
 
 
   /* ============================================================
@@ -1451,6 +1746,17 @@
   ['dragleave', 'drop'].forEach(t => drop.addEventListener(t, e => { e.preventDefault(); drop.classList.remove('drag'); }));
   drop.addEventListener('drop', e => setPhotos([...e.dataTransfer.files]));
 
+  document.querySelectorAll('input[name="fit"]').forEach(r => { r.checked = r.value === settings.fit; });
+  document.querySelectorAll('input[name="bw"]').forEach(r => { r.checked = (r.value === '1') === settings.bw; });
+
+  function onSettingsChange(){
+    settings.fit = document.querySelector('input[name="fit"]:checked').value;
+    settings.bw = document.querySelector('input[name="bw"]:checked').value === '1';
+    try { localStorage.setItem('camagent.settings', JSON.stringify(settings)); } catch (e) { /* nicht verfügbar */ }
+    SLOTS.forEach(s => requestRender(s.id));
+  }
+  document.querySelectorAll('#options input').forEach(r => r.addEventListener('change', onSettingsChange));
+
   $('#btnZip').addEventListener('click', downloadZip);
   $('#btnAll').addEventListener('click', downloadAll);
   $('#btnShare').addEventListener('click', shareAll);
@@ -1477,6 +1783,10 @@
   window.addEventListener('appinstalled', () => { $('#install').hidden = true; });
 
   if ('serviceWorker' in navigator){
+    const hadController = !!navigator.serviceWorker.controller;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (hadController) toast('Update installiert. Schließe die App und öffne sie neu.');
+    });
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('sw.js').catch(() => {});
     });

@@ -1,7 +1,7 @@
 {
-  "name": "Foto-Muster",
-  "short_name": "Foto-Muster",
-  "description": "Neue Fotos unverändert in die Muster für Mo–Sa und Event einsetzen.",
+  "name": "CAM AGENT",
+  "short_name": "CAM AGENT",
+  "description": "Neue Fotos in die Tages-Layouts für Mo–Sa und Event einsetzen – zugeschnitten und in Schwarz-Weiß.",
   "lang": "de",
   "start_url": "./",
   "scope": "./",
@@ -10,8 +10,23 @@
   "background_color": "#eef3f8",
   "theme_color": "#073b82",
   "icons": [
-    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
   ]
 }
